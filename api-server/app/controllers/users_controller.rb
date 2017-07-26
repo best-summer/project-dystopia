@@ -5,9 +5,8 @@ class UsersController < ApplicationController
   end
 
   def show
-    # @user = User.find(params[:id])
-    @user = User.find_by(name: params[:id])
-
+    @user = User.find(params[:id])
+    # @user = User.find_by(name: params[:name])
     render json: @user
   end
 
@@ -32,12 +31,12 @@ class UsersController < ApplicationController
 
   # DELETE /books/1
   def destroy
-    @book.destroy
+    @user.destroy
   end
 
   private
     def user_params
-      params.require(:user).permit(:name)
+      params.require(:user).permit(:client_id, :name)
     end
 end
 
