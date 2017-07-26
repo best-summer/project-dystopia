@@ -117,33 +117,37 @@
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="34" parent="8" name="name">
+    <column id="34" parent="8" name="client_id">
       <Position>1</Position>
       <DataType>varchar|0</DataType>
     </column>
-    <column id="35" parent="8" name="score">
+    <column id="35" parent="8" name="name">
       <Position>2</Position>
-      <DataType>integer|0</DataType>
+      <DataType>varchar|0</DataType>
     </column>
-    <column id="36" parent="8" name="billing">
+    <column id="36" parent="8" name="score">
       <Position>3</Position>
       <DataType>integer|0</DataType>
     </column>
-    <column id="37" parent="8" name="rank">
+    <column id="37" parent="8" name="billing">
       <Position>4</Position>
       <DataType>integer|0</DataType>
     </column>
-    <column id="38" parent="8" name="created_at">
+    <column id="38" parent="8" name="rank">
       <Position>5</Position>
-      <DataType>datetime|0</DataType>
-      <NotNull>1</NotNull>
+      <DataType>integer|0</DataType>
     </column>
-    <column id="39" parent="8" name="updated_at">
+    <column id="39" parent="8" name="created_at">
       <Position>6</Position>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="40" parent="8">
+    <column id="40" parent="8" name="updated_at">
+      <Position>7</Position>
+      <DataType>datetime|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="41" parent="8">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>

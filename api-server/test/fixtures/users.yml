@@ -1,13 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  score: 1
-  billing: 1
+  client_id: 1
+  name: Aocchi
+  score: 100
+  billing: 5000
   rank: 1
 
 two:
-  name: MyString
-  score: 1
-  billing: 1
-  rank: 1
+  client_id: 2
+  name: Nenecchi
+  score: 810
+  billing: 114514
+  rank: 2
