@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   #
   # get 'items/destroy'
 
+  post '/signup', to: 'users#create'
+
+
   get 'users/index'
   post 'users/create'
   get 'users/show'

@@ -6,7 +6,7 @@ class UserTest < ActiveSupport::TestCase
   # end
 
   def setup
-    @user = User.new(name: "Suzukaze Aoba")
+    @user = User.new(name: "Suzukaze Aoba", client_id: "114514")
   end
 
   # test "should be valid" do
@@ -22,6 +22,13 @@ class UserTest < ActiveSupport::TestCase
     @user.client_id = ""
     assert_not @user.client_id?
   end
+
+  test "name and client_id should be unique" do
+    duplicate_user = @user.dup
+    @user.save
+    assert_not duplicate_user.valid?
+  end
+
 end
 
 
