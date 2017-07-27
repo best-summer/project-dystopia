@@ -12,6 +12,7 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(create_user_params)
+    @user.create_password
     if @user.save
       render json: @user, status: :created, location: @user
     else
