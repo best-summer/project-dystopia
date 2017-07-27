@@ -22,9 +22,14 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
     "login_key":"{乱数で生成された文字列}"
   }
 
-## ログイン処理 [/login]
+## ログイン処理 [/login{?device_id,login_key}]
 
-### ログインリクエスト [POST]
++ Parameters
+    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
+    + login_key (string) - ログインキー、サインアップ時に配布
+
+
+### ログインリクエスト [GET]
 ログインリクエストを行う。特に意味はないが何かに使えるかもしれないので一応リクエスト
 (ログインボーナスとか)
 
@@ -39,9 +44,13 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
 
   }
 
-## ステータス取得処理 [/status]
+## ステータス取得処理 [/status{?device_id,login_key}]
 
-### ステータス取得リクエスト [POST]
++ Parameters
+    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
+    + login_key (string) - ログインキー、サインアップ時に配布
+
+### ステータス取得リクエスト [GET]
 主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
 
 + Request (application/json)
@@ -58,4 +67,27 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
     "rate":79832,
     "rank":"S+"
   }
-  
+
+## 装備変更処理 [/weapon{?device_id,login_key}]
+
++ Parameters
+    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
+    + login_key (string) - ログインキー、サインアップ時に配布
+
+### 武器取得リクエスト [GET]
+主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
+
++ Request (application/json)
+  {
+    "device_id":"35-209900-176148-1",
+    "login_key":""
+  }
+
++ Response 200 (application/json)
+  {
+    "remain_natsuyasumi":900,
+    "win_count":10,
+    "loose_count":5,
+    "rate":79832,
+    "rank":"S+"
+  }
