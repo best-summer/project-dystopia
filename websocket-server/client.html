@@ -1,0 +1,105 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket Client</title>
+
+</head>
+
+<body>
+  <button onclick="join();" id="join">join</button>
+  <button onclick="leave();" id="join">leave</button>
+  <button onclick="list();" id="join">list</button>
+  <button onclick="send();" id="join">send</button>
+  <button onclick="attack();" id="join">attack</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
+  <script type="text/javascript">
+    // var socketio = io.connect('http://ec2-54-201-20-190.us-west-2.compute.amazonaws.com:3000/');
+    var socketio = io.connect('http://localhost:3000/');
+    var deviceId = rand(10000);
+
+    function rand(max) {
+      return Math.floor( Math.random() * max);
+    }
+
+    var ballTypes = [ 'normal', 'speed', 'skeleton', 'heavy', 'special' ];
+    var ballType  = ballTypes[rand(5)];
+
+    function join() {
+      socketio.emit('join', {
+        roomId: 0,
+        deviceId: deviceId,
+        name: `michael`,
+      });
+    }
+
+    function leave() {
+      socketio.emit('leave', {
+        roomId: 0,
+        deviceId: deviceId
+      });
+    }
+
+    function list() {
+      socketio.emit('list');
+    }
+
+    function send() {
+      socketio.emit('send', {
+        roomId: 0,
+        deviceId: deviceId,
+        ballType: ballTypes[rand(5)],
+        x: rand(50),
+        y: rand(50),
+      });
+    }
+
+    function attack() {
+      socketio.emit('attack', {
+        roomId: 0,
+        deviceId: deviceId,
+        score: rand(100)
+      });
+    }
+
+    socketio.on('joined', function(data) {
+      console.log('=== joined ===');
+      console.log(data);
+      console.log('==============');
+    });
+
+    socketio.on('leaved', function(data) {
+      console.log('=== leaved ===');
+      console.log(data);
+      console.log('==============');
+    });
+
+    socketio.on('list', function(data) {
+      console.log('=== list ===');
+      console.log(data);
+      console.log('==============');
+    })
+
+    socketio.on('received', function(data) {
+      console.log('=== received ===');
+      console.log(data);
+      console.log('==============');
+    });
+
+    socketio.on('damaged', function(data) {
+      console.log('=== damaged ===');
+      console.log(data);
+      console.log('==============');
+    });
+
+    socketio.on('finished', function(data) {
+      console.log('=== finished ===');
+      console.log(data);
+      console.log('==============');
+    });
+
+  </script>
+</body>
+
+</html>
