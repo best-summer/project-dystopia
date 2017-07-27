@@ -11,7 +11,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)
+    @user = User.new(create_user_params)
     if @user.save
       render json: @user, status: :created, location: @user
     else
@@ -19,24 +19,25 @@ class UsersController < ApplicationController
     end
   end
 
-
-  # PATCH/PUT /books/1
   def update
-    if @user.update(user_params)
+    if @user.update(update_user_params)
       render json: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
   end
 
-  # DELETE /books/1
   def destroy
     @user.destroy
   end
 
   private
-    def user_params
+    def create_user_params
       params.require(:user).permit(:client_id, :name)
+    end
+
+    def update_user_params
+      params.require(:user).permit(:name, :score, :billing, :rank)
     end
 end
 

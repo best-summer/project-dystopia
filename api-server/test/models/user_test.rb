@@ -23,3 +23,5 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.client_id?
   end
 end
+
+
