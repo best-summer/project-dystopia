@@ -33,12 +33,6 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
 ログインリクエストを行う。特に意味はないが何かに使えるかもしれないので一応リクエスト
 (ログインボーナスとか)
 
-+ Request (application/json)
-  {
-    "device_id":"35-209900-176148-1",
-    "login_key":""
-  }
-
 + Response 200 (application/json)
   {
 
@@ -52,12 +46,6 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
 
 ### ステータス取得リクエスト [GET]
 主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
-
-+ Request (application/json)
-  {
-    "device_id":"35-209900-176148-1",
-    "login_key":""
-  }
 
 + Response 200 (application/json)
   {
@@ -76,12 +64,6 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
 
 ### 武器取得リクエスト [GET]
 主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
-
-+ Request (application/json)
-  {
-    "device_id":"35-209900-176148-1",
-    "login_key":""
-  }
 
 + Response 200 (application/json)
   {
