@@ -38,3 +38,24 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
   {
 
   }
+
+## ステータス取得処理 [/status]
+
+### ステータス取得リクエスト [POST]
+主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
+
++ Request (application/json)
+  {
+    "device_id":"35-209900-176148-1",
+    "login_key":""
+  }
+
++ Response 200 (application/json)
+  {
+    "remain_natsuyasumi":900,
+    "win_count":10,
+    "loose_count":5,
+    "rate":79832,
+    "rank":"S+"
+  }
+  
