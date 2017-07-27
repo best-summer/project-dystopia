@@ -63,13 +63,21 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
     + login_key (string) - ログインキー、サインアップ時に配布
 
 ### 武器取得リクエスト [GET]
-主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
+現在装備中の武器を取得する
 
 + Response 200 (application/json)
   {
-    "remain_natsuyasumi":900,
-    "win_count":10,
-    "loose_count":5,
-    "rate":79832,
-    "rank":"S+"
+    "weapon":"3"
+  }
+
+### 武器更新リクエスト [UPDATE]
+変更した武器を更新する
+
++ Request (application/json)
+  {
+    "weapon":"4"
+  }
+
++ Response 200 (application/json)
+  {
   }
