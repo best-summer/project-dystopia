@@ -1,20 +1,19 @@
 class UsersController < ApplicationController
   def index
-    @users = User.all
+    @users = User.all.as_json(except: [:id, :client_id, :password])
     render json: @users
   end
 
   def show
     @user = User.find(params[:id])
-    # @user = User.find_by(name: params[:name])
-    render json: @user
+    render @user
   end
 
   def create
     @user = User.new(create_user_params)
     @user.create_password
     if @user.save
-      render json: @user, status: :created, location: @user
+      render json: @user.as_json(only:[:password]), status: :created, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
