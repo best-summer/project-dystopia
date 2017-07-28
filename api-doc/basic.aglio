@@ -1,0 +1,83 @@
+FORMAT: 1A
+
+# project-dystopia基本機能API設計
+
+## 初回サインアップ処理 [/signup]
+
+### 初回サインアップリクエスト [POST]
+アプリが初回起動ならRailsサーバーへデバイスIDとユーザー名を渡してサインアップする
+
+device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので文字列で渡す。
+
++ Request (application/json)
+  {
+    "device_id":"35-209900-176148-1",
+    "user_name":"garicchi"
+  }
+
+レスポンスは次回以降の認証用にログインキーを渡す。
+
++ Response 200 (application/json)
+  {
+    "login_key":"{乱数で生成された文字列}"
+  }
+
+## ログイン処理 [/login{?device_id,login_key}]
+
++ Parameters
+    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
+    + login_key (string) - ログインキー、サインアップ時に配布
+
+
+### ログインリクエスト [GET]
+ログインリクエストを行う。特に意味はないが何かに使えるかもしれないので一応リクエスト
+(ログインボーナスとか)
+
++ Response 200 (application/json)
+  {
+
+  }
+
+## ステータス取得処理 [/status{?device_id,login_key}]
+
++ Parameters
+    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
+    + login_key (string) - ログインキー、サインアップ時に配布
+
+### ステータス取得リクエスト [GET]
+主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
+
++ Response 200 (application/json)
+  {
+    "remain_natsuyasumi":900,
+    "win_count":10,
+    "loose_count":5,
+    "rate":79832,
+    "rank":"S+"
+  }
+
+## 装備変更処理 [/weapon{?device_id,login_key}]
+
++ Parameters
+    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
+    + login_key (string) - ログインキー、サインアップ時に配布
+
+### 武器取得リクエスト [GET]
+現在装備中の武器を取得する
+
++ Response 200 (application/json)
+  {
+    "weapon":"3"
+  }
+
+### 武器更新リクエスト [UPDATE]
+変更した武器を更新する
+
++ Request (application/json)
+  {
+    "weapon":"4"
+  }
+
++ Response 200 (application/json)
+  {
+  }
