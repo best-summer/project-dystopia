@@ -51,7 +51,7 @@ Unity->Rails
 ```js
 {
   "type":"join_room",
-  "room_id":""
+  "status":""
 }
 ```
 
@@ -76,3 +76,41 @@ Unity->Rails
 ```
 
 ## ゲームプレイ
+
+### ゲーム開始
+#### 通信方向
+Rails->Unity
+
+#### Request
+```js
+{
+  "type":"game_start",
+  "room_id":""
+}
+```
+
+#### Response
+```js
+{
+  "status":"ok"
+}
+```
+
+### ゲーム終了
+#### 通信方向
+Rails->Unity
+
+#### Request
+```js
+{
+  "type":"game_finish",
+  "room_id":""
+}
+```
+
+#### Response
+```js
+{
+  "status":"ok"
+}
+```
