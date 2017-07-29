@@ -9,7 +9,8 @@
       <introspection-schemas>*:main</introspection-schemas>
     </data-source>
     <data-source name="test.sqlite3" uuid="593b13ad-c14d-4356-988d-e7111b1ee03e">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+      <database-info product="SQLite" version="3.16.1" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
       <introspection-schemas>*:main</introspection-schemas>
     </data-source>
   </component>

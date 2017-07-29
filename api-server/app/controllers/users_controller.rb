@@ -1,14 +1,22 @@
 class UsersController < ApplicationController
-
   # /users
   def index
     @users = User.all.as_json
     render json: @users
   end
 
+  # /user/:user/status?login_key
+  # 各ユーザのステータスを表示する
   def show
-    @user = User.find_by(id: params[:id])
-    render @user
+    p params
+    @user = User.find_by(name: params[:name])
+    if @user.authenticate_only_login_key?(params)
+      # render json: @user
+      render json: @user.as_json(only:[:name, :score, :win_count, :lose_count,
+                                        :summer_vacation_days])
+    else
+      render :nothing => true, status: :unprocessable_entity
+    end
   end
 
   #  POST /signup

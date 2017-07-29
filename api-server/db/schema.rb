@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170729172640) do
+ActiveRecord::Schema.define(version: 20170729181043) do
 
   create_table "items", force: :cascade do |t|
     t.string   "name"
@@ -27,11 +27,12 @@ ActiveRecord::Schema.define(version: 20170729172640) do
     t.integer  "score"
     t.integer  "billing"
     t.integer  "rank"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
     t.string   "login_key"
     t.integer  "win_count"
     t.integer  "lose_count"
+    t.integer  "summer_vacation_days"
   end
 
 end

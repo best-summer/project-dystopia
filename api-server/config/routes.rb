@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   get '/status',  to: 'users#index'
   delete '/logout',  to: 'sessions#destroy'
   patch '/signup', to: 'users#update'
+  get '/users/:name/status',  to: 'users#show'
 
 
 

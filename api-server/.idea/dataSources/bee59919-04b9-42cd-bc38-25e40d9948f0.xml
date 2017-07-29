@@ -151,7 +151,15 @@
       <Position>8</Position>
       <DataType>varchar|0</DataType>
     </column>
-    <key id="42" parent="8">
+    <column id="42" parent="8" name="win_count">
+      <Position>9</Position>
+      <DataType>integer|0</DataType>
+    </column>
+    <column id="43" parent="8" name="lose_count">
+      <Position>10</Position>
+      <DataType>integer|0</DataType>
+    </column>
+    <key id="44" parent="8">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
