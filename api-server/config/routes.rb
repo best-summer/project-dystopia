@@ -1,9 +1,15 @@
 Rails.application.routes.draw do
-  # get 'items/index'
-  # get 'items/show'
-  # get 'items/create'
-  # get 'items/update'
-  # get 'items/destroy'
+  get 'items/index'
+
+  get 'items/show'
+
+  get 'items/create'
+
+  get 'items/update'
+
+  get 'items/destroy'
+
+
 
   resources :users
   post '/signup', to: 'users#create'
