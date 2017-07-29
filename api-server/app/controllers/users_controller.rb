@@ -1,26 +1,35 @@
 class UsersController < ApplicationController
+
+  # /users
   def index
-    @users = User.all.as_json(except: [:id, :client_id, :password])
+    @users = User.all.as_json
     render json: @users
   end
 
   def show
-    @user = User.find(params[:id])
+    @user = User.find_by(id: params[:id])
     render @user
   end
 
+  #  POST /signup
   def create
-    @user = User.new(create_user_params)
-    @user.create_password
+    @user = User.new(name: params[:name], device_id: params[:device_id])
+    @user.create_login_key
     if @user.save
-      render json: @user.as_json(only:[:password]), status: :created, location: @user
+      render json: @user.as_json(only:[:login_key]), status: :created, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
   end
 
+  # PATCH /signup/?device_id&login_key
   def update
-    if @user.update(update_user_params)
+    unless @user = User.find_by(device_id: params[:device_id])
+      render :nothing => true, status: :unprocessable_entity
+      return
+    end
+    if @user.authenticate?(params)
+      @user.update_attribute(:name,params[:name])
       render json: @user
     else
       render json: @user.errors, status: :unprocessable_entity
@@ -30,14 +39,5 @@ class UsersController < ApplicationController
   def destroy
     @user.destroy
   end
-
-  private
-    def create_user_params
-      params.require(:user).permit(:client_id, :name)
-    end
-
-    def update_user_params
-      params.require(:user).permit(:name, :score, :billing, :rank)
-    end
 end
 
