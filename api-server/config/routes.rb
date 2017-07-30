@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
-  get 'items/index'
-
-  get 'items/show'
-
-  get 'items/create'
-
-  get 'items/update'
-
-  get 'items/destroy'
+  resources :items
+  # get 'items/index' to
+  #
+  # get 'items/show'
+  #
+  # get 'items/create'
+  #
+  # get 'items/update'
+  #
+  # get 'items/destroy'
 
 
 
@@ -18,8 +19,8 @@ Rails.application.routes.draw do
   patch '/signup', to: 'users#update'
   get '/users/:name/status',  to: 'users#show'
   patch '/users/:name/status',  to: 'users#update_show'
-
-
+  get '/users/:name/items',  to: 'items#show'
+  post '/users/:name/items',  to: 'items#create'
 
   get 'users/index'
   # post 'users/create'

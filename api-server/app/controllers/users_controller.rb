@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   # /users
+  # 全ユーザの情報を表示する
   def index
     @users = User.all.as_json
     render json: @users
