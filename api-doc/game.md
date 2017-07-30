@@ -221,3 +221,36 @@ Unity->Node->Unity
   "ball_type":""
 }
 ```
+
+## リザルト機能
+
+### スコア送信
+
+#### 通信方向
+Node->Rails
+
+#### エンドポイント
+/gameresult
+
+#### Request
+```js
+{
+  "scores":[
+    {
+      "device_id":"",
+      "score":""
+    },
+    {
+      "device_id":"",
+      "score":""
+    }
+  ]
+}
+```
+
+#### Response
+```js
+{
+  "status":"ok"
+}
+```
