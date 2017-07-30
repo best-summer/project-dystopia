@@ -13,10 +13,11 @@ Rails.application.routes.draw do
 
   resources :users
   post '/signup', to: 'users#create'
-  get '/status',  to: 'users#index'
+  patch '/status', to: 'users#update_show'
   delete '/logout',  to: 'sessions#destroy'
   patch '/signup', to: 'users#update'
   get '/users/:name/status',  to: 'users#show'
+  patch '/users/:name/status',  to: 'users#update_show'
 
 
 
