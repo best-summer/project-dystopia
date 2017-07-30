@@ -7,7 +7,6 @@ class ItemsController < ApplicationController
 
   def show
     @user = User.find_by(name: params[:name])
-    p "aaaaaaaa"
     p @user.id
     @item = @user.item
     if @user.authenticate_only_login_key?(params)
@@ -19,14 +18,12 @@ class ItemsController < ApplicationController
 
   def create
     @user = User.find_by(name: params[:name])
-    @item = Item.new(name: params[:item][:name], value: params[:value],
+    @item = Item.new(name: params[:item][:name], value: params[:item][:value],
                      user_id: @user.id)
-    p "eeeeeeeeee"
-    p params
     if @user.authenticate_only_login_key?(params) && @item.save
       render json: @item
     else
-      render :nothing => true, status: :unprocessable_entity
+      render json: @item.errors, status: :unprocessable_entity
     end
   end
 
