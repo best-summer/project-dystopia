@@ -3,6 +3,7 @@ FORMAT: 1A
 # project-dystopia基本機能API設計
 
 ## 初回サインアップ処理 [/signup]
+接続先->Rails
 
 ### 初回サインアップリクエスト [POST]
 アプリが初回起動ならRailsサーバーへデバイスIDとユーザー名を渡してサインアップする
@@ -23,7 +24,7 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
   }
 
 ## ログイン処理 [/login{?device_id,login_key}]
-
+接続先->Rails
 + Parameters
     + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
     + login_key (string) - ログインキー、サインアップ時に配布
@@ -39,7 +40,7 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
   }
 
 ## ステータス取得処理 [/status{?device_id,login_key}]
-
+接続先->Rails
 + Parameters
     + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
     + login_key (string) - ログインキー、サインアップ時に配布
@@ -57,7 +58,7 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
   }
 
 ## 装備変更処理 [/weapon{?device_id,login_key}]
-
+接続先->Rails
 + Parameters
     + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
     + login_key (string) - ログインキー、サインアップ時に配布
