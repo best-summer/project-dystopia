@@ -2,7 +2,12 @@ FORMAT: 1A
 
 # project-dystopia基本機能API設計
 
+<<<<<<< HEAD
 ## サインアップ処理 [/signup]
+=======
+## 初回サインアップ処理 [/signup]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
 
 ### 初回サインアップリクエスト [POST]
 サーバーへデバイスIDとユーザー名を渡して登録処理を行う。
@@ -24,8 +29,13 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
     "login_key":"{乱数で生成された文字列}"
   }
 
+<<<<<<< HEAD
 ## ログイン処理　***未実装*** [/login{?device_id,login_key}]
 
+=======
+## ログイン処理 [/login{?device_id,login_key}]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
 + Parameters
     + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
     + login_key (string) - ログインキー、サインアップ時に配布
@@ -40,8 +50,13 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
 
   }
 
+<<<<<<< HEAD
 ## ステータス取得処理 [/users/:name/status?login_key]
 
+=======
+## ステータス取得処理 [/status{?device_id,login_key}]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
 + Parameters
     + login_key (string) - ログインキー、サインアップ時に配布
 
@@ -81,9 +96,14 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
     "summer_vacation_days": 1
   }
 
+<<<<<<< HEAD
 
 ## 所持アイテム取得処理 [/users/:name/items?login_key]
 
+=======
+## 装備変更処理 [/weapon{?device_id,login_key}]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
 + Parameters
     + login_key (string) - ログインキー、サインアップ時に配布
 
