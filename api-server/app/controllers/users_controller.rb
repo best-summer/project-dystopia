@@ -1,9 +1,10 @@
 class UsersController < ApplicationController
   # /users
-  # 全ユーザの情報を表示する
+  # 全ユーザの情報を表示する。デバッグ用
   def index
-    @users = User.all.as_json
+    @users = User.all
     render json: @users
+    # render 'index', formats: 'json'
   end
 
   # GET /users/:name/status
@@ -12,8 +13,7 @@ class UsersController < ApplicationController
     p params
     @user = User.find_by(name: params[:name])
     if @user.authenticate_only_login_key?(params)
-      render json: @user.as_json(only:[:name, :score, :win_count, :lose_count,
-                                        :summer_vacation_days])
+      render 'show', formats: 'json'
     else
       render :nothing => true, status: :unprocessable_entity
     end
@@ -25,12 +25,11 @@ class UsersController < ApplicationController
     p params
     @user = User.find_by(name: params[:name])
     if @user.authenticate_only_login_key?(params)
-        @user.attributes = {:score => params[:score], :win_count => params[:win_count],
+      @user.attributes = {:score => params[:score], :win_count => params[:win_count],
                             :lose_count => params[:lose_count],
                             :summer_vacation_days => params[:summer_vacation_days]}
       @user.save
-      render json: @user.as_json(only:[:name, :score, :win_count, :lose_count,
-                                       :summer_vacation_days])
+      render 'update_show', formats: 'json'
     else
       render :nothing => true, status: :unprocessable_entity
     end
@@ -41,10 +40,11 @@ class UsersController < ApplicationController
   def create
     @user = User.new(name: params[:name], device_id: params[:device_id])
     @user.create_login_key
+    p params
     if @user.save
-      render json: @user.as_json(only:[:login_key]), status: :created, location: @user
+      render 'create', formats: 'json'
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render :nothing => true, status: :unprocessable_entity
     end
   end
 
@@ -57,9 +57,9 @@ class UsersController < ApplicationController
     end
     if @user.authenticate?(params)
       @user.update_attribute(:name,params[:name])
-      render json: @user
+      render 'update', formats: 'json'
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render :nothing => true, status: :unprocessable_entity
     end
   end
 

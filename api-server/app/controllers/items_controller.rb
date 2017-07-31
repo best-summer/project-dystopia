@@ -10,7 +10,8 @@ class ItemsController < ApplicationController
     p @user.id
     @item = @user.item
     if @user.authenticate_only_login_key?(params)
-      render json: @item.as_json(only:[:name, :value])
+      # render 'show', formats: 'json'
+      render json: @item.as_json
     else
       render :nothing => true, status: :unprocessable_entity
     end
@@ -21,7 +22,8 @@ class ItemsController < ApplicationController
     @item = Item.new(name: params[:item][:name], value: params[:item][:value],
                      user_id: @user.id)
     if @user.authenticate_only_login_key?(params) && @item.save
-      render json: @item
+      # render 'create', formats: 'json'
+      render json: @item.as_json
     else
       render json: @item.errors, status: :unprocessable_entity
     end
