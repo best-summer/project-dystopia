@@ -1,1 +1,6 @@
-json.set! :name, @item.name
+json.items do
+  json.array! @items do |item|
+    json.name item.name
+    json.value item.value
+  end
+end

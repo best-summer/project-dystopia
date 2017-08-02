@@ -7,11 +7,10 @@ class ItemsController < ApplicationController
 
   def show
     @user = User.find_by(name: params[:name])
-    p @user.id
-    @item = @user.item
+    @items = @user.item
     if @user.authenticate_only_login_key?(params)
-      # render 'show', formats: 'json'
-      render json: @item.as_json
+      render 'show', formats: 'json'
+      # render json: @items.as_json
     else
       render :nothing => true, status: :unprocessable_entity
     end
