@@ -148,7 +148,8 @@ Unity->Node->Unity
 ```js
 {
   "type":"move_bar",
-  "device_id":""
+  "device_id":"",
+  "room_id":"",
   "bar_type":"{left,right}"
 }
 ```
@@ -161,7 +162,8 @@ Unity->Node->Unity
 ```js
 {
   "type":"launch_special",
-  "device_id":""
+  "device_id":"",
+  "room_id":"",
   "ball_type":""
 }
 ```
@@ -175,6 +177,7 @@ Unity->Node->Unity
 {
   "type":"reflect_ball",
   "device_id":"",
+  "room_id":"",
   "ball_id":"",
   "ball_type":"",
   "reflect_type":"{wall,bar}",
@@ -198,6 +201,7 @@ Unity->Node->Unity
 {
   "type":"goal",
   "device_id":"",
+  "room_id":"",
   "ball_id":"",
   "ball_type":""
 }
