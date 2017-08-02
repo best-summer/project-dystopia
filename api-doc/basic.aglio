@@ -2,17 +2,24 @@ FORMAT: 1A
 
 # project-dystopia基本機能API設計
 
+<<<<<<< HEAD
+## サインアップ処理 [/signup]
+=======
 ## 初回サインアップ処理 [/signup]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
 
 ### 初回サインアップリクエスト [POST]
-アプリが初回起動ならRailsサーバーへデバイスIDとユーザー名を渡してサインアップする
+サーバーへデバイスIDとユーザー名を渡して登録処理を行う。
+DB上に重複したデバイスIDかユーザ名がある場合は登録処理は行われない。
 
+登録に成功したときはDB上にbase64乱数を生成して登録する。
 device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので文字列で渡す。
 
 + Request (application/json)
   {
     "device_id":"35-209900-176148-1",
-    "user_name":"garicchi"
+    "name":"Nenecchi"
   }
 
 レスポンスは次回以降の認証用にログインキーを渡す。
@@ -22,8 +29,13 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
     "login_key":"{乱数で生成された文字列}"
   }
 
-## ログイン処理 [/login{?device_id,login_key}]
+<<<<<<< HEAD
+## ログイン処理　***未実装*** [/login{?device_id,login_key}]
 
+=======
+## ログイン処理 [/login{?device_id,login_key}]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
 + Parameters
     + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
     + login_key (string) - ログインキー、サインアップ時に配布
@@ -38,46 +50,97 @@ device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので
 
   }
 
-## ステータス取得処理 [/status{?device_id,login_key}]
+<<<<<<< HEAD
+## ステータス取得処理 [/users/:name/status?login_key]
 
+=======
+## ステータス取得処理 [/status{?device_id,login_key}]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
 + Parameters
-    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
     + login_key (string) - ログインキー、サインアップ時に配布
 
 ### ステータス取得リクエスト [GET]
-主にメニュー画面に遷移した時にユーザーのスコアなどを取得する
+ユーザの情報を表示する
 
 + Response 200 (application/json)
-  {
-    "remain_natsuyasumi":900,
+  { 
+    "name": Nenecchi,
+    "score":79832,
     "win_count":10,
     "loose_count":5,
-    "rate":79832,
-    "rank":"S+"
+    "rank":"42",
+    "summer_vacation_days": 32
   }
-
-## 装備変更処理 [/weapon{?device_id,login_key}]
-
-+ Parameters
-    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
-    + login_key (string) - ログインキー、サインアップ時に配布
-
-### 武器取得リクエスト [GET]
-現在装備中の武器を取得する
-
-+ Response 200 (application/json)
-  {
-    "weapon":"3"
-  }
-
-### 武器更新リクエスト [UPDATE]
-変更した武器を更新する
+## ステータス更新処理　  [/users/:name/status?login_key]
+### ステータス更新リクエスト [PATCH]
+ユーザの情報を更新する
 
 + Request (application/json)
-  {
-    "weapon":"4"
-  }
+{
+    "name": Aocchi,
+    "score": 810,
+    "win_count": 432,
+    "loose_count": 225,
+    "rank": 12,
+    "summer_vacation_days": 1
+}
 
 + Response 200 (application/json)
-  {
+  { 
+    "name": Aocchi,
+    "score":810,
+    "win_count":432,
+    "loose_count":225,
+    "rank":12,
+    "summer_vacation_days": 1
+  }
+
+<<<<<<< HEAD
+
+## 所持アイテム取得処理 [/users/:name/items?login_key]
+
+=======
+## 装備変更処理 [/weapon{?device_id,login_key}]
+接続先->Rails
+>>>>>>> refs/remotes/origin/master
++ Parameters
+    + login_key (string) - ログインキー、サインアップ時に配布
+
+### ステータス取得リクエスト [GET]
+ユーザの所持しているアイテムの情報を表示する。
+
+所持しているアイテムの種類に応じて返却されるJSONデータの個数が変化する。
+
+(現在アイテムの個数が表示されない。修正予定。)
+
++ Response 200 (application/json)
+  { 
+    "name": "SuperBall",
+    "value": 450
+    "number": 5
+  }
+
+  { 
+    "name": "UltraBall",
+    "value":50000000 
+    "number": 1
+  }
+
+## ステータス更新処理　  [/users/:name/items?login_key]
+### ステータス更新リクエスト [PATCH]
+アイテム名と個数を送信し、ユーザの持っているアイテムの個数を変更する。
+(現在返却されるデータが少し違う。修正予定)
+
++ Request (application/json)
+{
+    "name": "UltraBall",
+    "number": 3
+}
+
++ Response 200 (application/json)
+  { 
+    "name": "UltraBall",
+    "value": 50000000,
+    "number": 3
   }
