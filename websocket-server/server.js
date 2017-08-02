@@ -5,6 +5,7 @@ var aws = require('aws-sdk');
 var uuid = require('node-uuid');
 var colors = require('colors');
 
+
 http = http.createServer(function (req, res) {
   res.writeHead(200, { "Content-Type": "text/html" });
   var output = fs.readFileSync("./index.html", "utf-8");
@@ -13,242 +14,155 @@ http = http.createServer(function (req, res) {
 
 io = io.listen(http);
 
-// aws.config.loadFromPath('credentials.json');
-
-// var dy = new aws.DynamoDB();
 
 var _rooms = [];
-var _players = {};
-// var players = {
-//   0000000: {
-//     name: `michael`,
-//     score: 10,
-//     roomId: 2,
-//     socketId: 888,
-//   }
-// }
-
-
-// 部屋を初期化する
-for (var i = 1; i <= 10; i++) {
-  _rooms.push({
-    roomId: i,
-    players: [
-      // { deviceId: 00000000 },
-      // { deviceId: 11111111 }
-    ],
-    playerCount: 0
-  });
-}
+var _time = 0;
+var _scores = [];
 
 
 io.sockets.on("connection", function (socket) {
 
   log('Connected', { socketId: socket.id });
 
-  
-  // 部屋に入る
-  socket.on('join', function(props) {
-    var roomId   = props.roomId;
-    var deviceId = props.deviceId;
-    var name     = props.name;
+  socket.on('message', function(props) {
 
-    // 例外処理
-    if (_rooms[roomId].playerCount >= 2) {
-      io.to(socket.id).emit('joined', {
-        error: `Failed to join: playerCount is over 2.`
-      });
-      return;
-    }
+    props = JSON.parse(props);
 
-    // _rooms に登録
-    var players = _rooms[roomId].players;
-    players.push(deviceId);
-    _rooms[roomId].playerCount++;
+    var types = {
 
-    // users に登録
-    _players[deviceId] = {
-      name: name,
-      score: 0,
-      roomId: roomId,
-      socketId: socket.id
+      // Matching.
+      get_rooms: get_rooms,
+      join_room: join_room,
+      leave_room: leave_room,
+
+      // Progress.
+      game_start: game_start,
+      game_finish: game_finish,
+
+      // Play.
+      game_time: game_time,
+      game_score: game_score,
+      shoot_ball: shoot_ball,
+      move_bar: move_bar,
+      launch_special: launch_special,
+      reflect_ball: reflect_ball,
+      goal: goal,
+
     };
 
-    // 入室
-    socket.join(roomId);
-
-    // 入室完了
-    io.to(socket.id).emit('joined', {
-      playerId: 1,
-      roomId: roomId
-    });
-
-    log('Joined', {
-      socketId: socket.id,
-      _rooms: _rooms,
-      _players: _players
-    });
-  });
-
-
-  // 部屋を抜ける
-  socket.on('leave', function(props) {
-    var roomId   = props.roomId;
-    var deviceId = props.deviceId;
-
-    // 例外処理
-    if (_players[deviceId] == null) {
-      io.to(socket.id).emit('leaved', {
-        error: `Failed to leave: You are not joined.`
+    // Check whether props.type is correct type.
+    var typeNames = Object.keys(types);
+    if (!typeNames.includes(props.type)) {
+      io.to(socket.id).emit(`message`, {
+        status: `error`,
+        reason: `Incorrect type.`
       });
       return;
     }
 
-    // _rooms から削除
-    var room = _rooms[roomId];
-    var players = room.players;
-    players.forEach(function(value, index) {
-      if (players[index] === deviceId)
-        players.splice(index, 1);
-    })
-    room.playerCount--;
-
-    // users から削除
-    delete _players[deviceId];
-
-    // 退室
-    socket.leave(roomId);
-
-    // 退室完了
-    io.to(socket.id).emit('leaved');
-
-    log('Leaved', {
-      socketId: socket.id,
-      _rooms: _rooms,
-      _players: _players
-    });
-  });
-
-
-  // 部屋のリストを取得する
-  socket.on('List', function() {
-    io.to(socket.id).emit('list', _rooms);
-  });
-
-
-  // ボールを送る
-  socket.on('send', function(props) {
-    var roomId = props.roomId;
-    var myDeviceId = props.deviceId; // 相手ではなく自分の端末 ID
-    var ballType = props.ballType;
-    var x = props.x;
-    var y = props.y;
-
-    // 相手の socketId を取得する
-    var rivalDeviceId = _rivalDeviceId(roomId, myDeviceId);
-    var rivalSocketId = _players[rivalDeviceId].socketId;
-
-    var properties = {
-      ballType: ballType,
-      x: x,
-      y: y
-    };
-
-    // 送信
-    io.to(rivalSocketId).emit('received', properties);
-
-    log('Send', {
-      myDeviceIdId: myDeviceId,
-      rivalDeviceId:rivalDeviceId,
-      props: props
-    });
-  });
-
-
-  // 自分が得点した
-  socket.on('attack', function(props) {
-    var roomId = props.roomId;
-    var myDeviceId = props.deviceId; // 相手ではなく自分の端末 ID
-    var score = props.score;
-
-    // 相手の socketId を取得する
-    var rivalDeviceId = _rivalDeviceId(roomId, myDeviceId);
-    var rivalSocketId = _players[rivalDeviceId].socketId;
-
-    var properties = { score: score };
-
-    // 送信
-    io.to(rivalSocketId).emit('damaged', properties);
-
-    log('Attack', {
-      myDeviceIdId: myDeviceId,
-      rivalDeviceId:rivalDeviceId,
-      props: props
-    });
-  });
-
-
-  // ゲーム終了
-  socket.on('finish', function(props) {
-    var roomId = props.roomId;
-    var playerDeviceIds = _playerDeviceIds(roomId);
-
-    playerDeviceIds.forEach(function(value, index) {
-      io.toString(value).emit('finished', {
-        scores: {
-          you: 0,
-          rival: 0
-        },
-        result: 'win'
-      });
-    });
-  });
-
-
-  // 途中で切断した
-  socket.on('disconnect', function() {
-    var roomId   = null;
-    var deviceId = null;
-
-    // _players から削除
-    Object.keys(_players).forEach(function(value) {
-      if (value === socket.id) {
-        roomId = _players[value].roomId;
-        deviceId = value;
-        delete _players[deviceId];
-      }
-    });
-
-    // 例外処理
-    if (roomId == null || deviceId == null) {
-      console.log('Failed to dissconnect:', socket.id, 'is not connected.');
-      return;
-    }
-
-    // _rooms から削除
-    var players = _rooms[roomId].players;
-    _rooms[roomId].players = players.filter(function(value) {
-      return value !== deviceId;
-    });
+    props[props.type](socket, props);
   });
 });
 
-var _rivalDeviceId = function(roomId, myDeviceId) {
-  var result = null;
-
-  var room = _rooms[roomId];
-  var players = room.players;
-
-  players.forEach(function (deviceId) {
-    if (deviceId != myDeviceId)
-      result = deviceId;
-  });
-
-  return result;
+var emit = function(socket, props) {
+  io.to(socket.id).emit(`message`, props);
 }
 
-var _playerDeviceIds = function(roomId) {
-  return _rooms[roomId].players;
+var get_rival_player = function(socket, props) {
+  var room = _rooms[props.room_id];
+  if (room == null) {
+    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+    return;
+  }
+  var rival_player;
+  room.players.forEach(function(player) {
+    if (player.device_id != props.device_id) {
+      rival_player = player;
+    }
+  });
+  return rival_player;
+}
+
+var get_rooms = function(socket, props) {
+  emit(socket, { type: props.type, rooms: _rooms });
+}
+
+var join_room = function(socket, props) {
+  var room = _rooms[props.room_id];
+  if (room == null) {
+    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+    return;
+  }
+  if (room.players.length >= 2) {
+    emit(socket, { status: `error`, reason: `players count is over 2.` });
+    return;
+  }
+  var newPlayer = {
+    device_id: props.device_id,
+    user_name: props.user_name,
+    socket_id: socket.id
+  };
+  room.players.push(newPlayer);
+  emit(socket, { type: props.type, status: `ok` });
+}
+
+var leave_room = function(socket, props) {
+  var room = _rooms[props.room_id];
+  if (room == null) {
+    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+    return;
+  }
+  room.players.forEach(function(player, index) {
+    if (player.device_id == props.device_id) {
+      room.players.splice(index, 1);
+    }
+  });
+  emit(socket, { type: props.type, status: `ok` });
+}
+
+var game_start = function(socket, props) {
+  // Rails.
+}
+
+var game_finish = function(socket, props) {
+  // Rails.
+}
+
+var game_time = function(socket, props) {
+  emit(socket, { type: props.type, time_second: _time });
+}
+
+var game_score = function(socket, props) {
+  emit(socket, { type: props.type, scores: _scores });
+}
+
+var shoot_ball = function(socket, props) {
+  var rival_player = rival_player(socket, props);
+  emit(rival_player.socket_id, props);
+}
+
+var move_bar = function(socket, props) {
+  var rival_player = get_rival_player(socket, props);
+  emit(rival_player.socket_id, props);
+}
+
+var launch_special = function(socket, props) {
+  var rival_player = get_rival_player(socket, props);
+  emit(rival_player.socket_id, props);
+}
+
+var reflect_ball = function(socket, props) {
+  var rival_player = get_rival_player(socket, props);
+  emit(rival_player.socket_id, props);
+}
+  
+var goal = function(socket, props) {
+  var rival_player = get_rival_player(socket, props);
+  emit(rival_player.socket_id, props);
+}
+
+var send_result = function() {
+  // Rails.
 }
 
 function log(eventName, objects) {
