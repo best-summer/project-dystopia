@@ -2,80 +2,62 @@
 
 ## マッチング管理
 
-### ルームリスト取得
+### マッチング開始
 #### 通信方向
 Unity->Node
 
 #### Request
 ```js
 {
-  "type":"get_rooms"
+  "type":"start_match",
+  "device_id":"",
+  "user_name":""
 }
 ```
 
-#### Response
-```js
-{
-  "type":"get_rooms",
-  "rooms":[
-    {
-      "room_id":"",
-      "players":[
-        {
-          "device_id":"",
-          "user_name":""
-        },
-        {
-          "device_id":"",
-          "user_name":""
-        }
-      ]
-    }
-  ]
-}
-```
-
-### ルーム入室
+### マッチングキャンセル
 #### 通信方向
 Unity->Node
 
 #### Request
 ```js
 {
-  "type":"join_room",
-  "room_id":"",
+  "type":"cancel_match",
   "device_id":""
 }
 ```
 
-#### Response
-```js
-{
-  "type":"join_room",
-  "status":"ok"
-}
-```
-
-### ルーム退出
+### マッチング完了
 #### 通信方向
-Unity->Node
+Node->Unity
 
 #### Request
 ```js
 {
-  "type":"leave_room",
+  "type":"complete_match",
   "room_id":"",
-  "device_id":""
+  "enemy":{
+    "device_id":"",
+    "user_name":"",
+    "remain_natsuyasumi":"",
+    "rank":""
+  }
 }
 ```
 
-#### Response
+### マッチング失敗
+#### 通信方向
+Node->Unity
+
+#### Request
 ```js
 {
-  "type":"leave_room",
-  "status":"ok"
+  "type":"faild_match",
+  "error_code":001,
+  "message":""
 }
 ```
+
 
 ## ゲーム進行管理
 
@@ -169,7 +151,8 @@ Unity->Node->Unity
 ```js
 {
   "type":"move_bar",
-  "device_id":""
+  "device_id":"",
+  "room_id":"",
   "bar_type":"{left,right}"
 }
 ```
@@ -182,7 +165,8 @@ Unity->Node->Unity
 ```js
 {
   "type":"launch_special",
-  "device_id":""
+  "device_id":"",
+  "room_id":"",
   "ball_type":""
 }
 ```
@@ -196,6 +180,7 @@ Unity->Node->Unity
 {
   "type":"reflect_ball",
   "device_id":"",
+  "room_id":"",
   "ball_id":"",
   "ball_type":"",
   "reflect_type":"{wall,bar}",
@@ -219,6 +204,7 @@ Unity->Node->Unity
 {
   "type":"goal",
   "device_id":"",
+  "room_id":"",
   "ball_id":"",
   "ball_type":""
 }
