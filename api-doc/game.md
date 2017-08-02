@@ -2,80 +2,61 @@
 
 ## マッチング管理
 
-### ルームリスト取得
+### マッチング開始
 #### 通信方向
 Unity->Node
 
 #### Request
 ```js
 {
-  "type":"get_rooms"
-}
-```
-
-#### Response
-```js
-{
-  "type":"get_rooms",
-  "rooms":[
-    {
-      "room_id":"",
-      "players":[
-        {
-          "device_id":"",
-          "user_name":""
-        },
-        {
-          "device_id":"",
-          "user_name":""
-        }
-      ]
-    }
-  ]
-}
-```
-
-### ルーム入室
-#### 通信方向
-Unity->Node
-
-#### Request
-```js
-{
-  "type":"join_room",
-  "room_id":"",
+  "type":"start_match",
   "device_id":""
 }
 ```
 
-#### Response
-```js
-{
-  "type":"join_room",
-  "status":"ok"
-}
-```
-
-### ルーム退出
+### マッチングキャンセル
 #### 通信方向
 Unity->Node
 
 #### Request
 ```js
 {
-  "type":"leave_room",
-  "room_id":"",
+  "type":"cancel_match",
   "device_id":""
 }
 ```
 
-#### Response
+### マッチング完了
+#### 通信方向
+Node->Unity
+
+#### Request
 ```js
 {
-  "type":"leave_room",
-  "status":"ok"
+  "type":"complete_match",
+  "room_id":"",
+  "enemy":{
+    "device_id":"",
+    "user_name":"",
+    "remain_natsuyasumi":"",
+    "rank":""
+  }
 }
 ```
+
+### マッチング失敗
+#### 通信方向
+Node->Unity
+
+#### Request
+```js
+{
+  "type":"faild_match",
+  "error_code":001,
+  "message":""
+}
+```
+
 
 ## ゲーム進行管理
 
