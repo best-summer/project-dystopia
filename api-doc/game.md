@@ -146,6 +146,8 @@ Node->Unity
 ```js
 {
   "type":"shoot_ball",
+  "device_id":"",
+  "room_id":"",
   "ball_type":"",
   "ball_id":"",
   "position":{
