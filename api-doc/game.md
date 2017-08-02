@@ -10,7 +10,8 @@ Unity->Node
 ```js
 {
   "type":"start_match",
-  "device_id":""
+  "device_id":"",
+  "user_name":""
 }
 ```
 
