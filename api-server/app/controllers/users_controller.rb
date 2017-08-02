@@ -7,20 +7,19 @@ class UsersController < ApplicationController
   end
 
   # GET /users/:name/status?login_key
-  # 各ユーザのステータスを表示する
+  # ユーザのステータスを表示する
   def show
     @user = User.find_by(name: params[:name])
     if @user.authenticate_only_login_key?(params)
       render 'show', formats: 'json'
     else
-      render json: {status: "ng", message: "Wrong login key"}
+      render json: {status: 'ng', message: 'Wrong login key'}
     end
   end
 
   #  PATCH /users/:name/status?login_key
   # ユーザのステータス更新を行う
   def update
-    p params[:user]
     @user = User.find_by(name: params[:name])
     for param in params[:user]
       if param == 'login_key'
@@ -32,7 +31,7 @@ class UsersController < ApplicationController
     if @user.authenticate_only_login_key?(params) && @user.save
       render 'update', formats: 'json'
     else
-      render json: {status: "ng", message: "Wrong login key"}
+      render json: {status: 'ng', message: 'Wrong login key'}
     end
   end
 
@@ -45,7 +44,7 @@ class UsersController < ApplicationController
     if @user.save
       render 'create', formats: 'json'
     else
-      render json: {status: "ng", message: "user_id or device_id is duplicated"}
+      render json: {status: 'ng', message: 'user_id or device_id is duplicated'}
     end
   end
 

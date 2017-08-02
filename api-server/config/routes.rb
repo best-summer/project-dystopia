@@ -19,10 +19,7 @@ Rails.application.routes.draw do
   patch '/users/:name/status',  to: 'users#update'
   get '/users/:name/items',  to: 'items#show'
   post '/users/:name/items',  to: 'items#create'
+  patch '/users/:name/items',  to: 'items#update'
 
   get 'users/index'
-  # post 'users/create'
-  # get 'users/show'
-  # patch 'users/update'
-  # delete 'users/destroy'
 end
