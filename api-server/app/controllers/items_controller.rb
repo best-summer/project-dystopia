@@ -25,8 +25,10 @@ class ItemsController < ApplicationController
                      user_id: @user.id)
     if @user.authenticate_only_login_key?(params) && @item.save
       render 'create', formats: 'json'
-    else
+    elsif !@user.authenticate_only_login_key?(params)
       render json: {status: 'ng', message: 'Wrong login key'}
+    elsif !@item.save(params)
+      render json: {status: 'ng', message: 'Item is already exists or Key is not enough'}
     end
   end
 
@@ -42,11 +44,16 @@ class ItemsController < ApplicationController
     for param in params[:item]
       @item[param] = params[:item][param]
     end
-
+    # これまでの課金合計額を計算して保存しておく TODO:モデルへ移動したい
+    # billing_sum = @item.sum(:value)
+    # @user[:billing] = billing_sum
+    # @user.save
     if @user.authenticate_only_login_key?(params) && @item.save
       render 'update', formats: 'json'
-    else
+    elsif !@user.authenticate_only_login_key?(params)
       render json: {status: 'ng', message: 'Wrong login key'}
+    elsif !@item.save(params)
+      render json: {status: 'ng', message: 'Key is not enough'}
     end
   end
 

@@ -40,7 +40,6 @@ class UsersController < ApplicationController
   def create
     @user = User.new(name: params[:name], device_id: params[:device_id])
     @user.create_login_key
-    p params
     if @user.save
       render 'create', formats: 'json'
     else
