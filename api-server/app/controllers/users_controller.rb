@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   # /users
-  # 全ユーザの情報を表示する。デバッグ用
+  # 全ユーザの情報を表示する。更新日時はうっとうしいので除外。デバッグ用
   def index
-    @users = User.all
+    @users = User.all.as_json(except: ['updated_at', 'created_at'])
     render json: @users
   end
 
@@ -10,6 +10,11 @@ class UsersController < ApplicationController
   # ユーザのステータスを表示する
   def show
     @user = User.find_by(name: params[:name])
+    if @user.nil?
+      render json: {status: 'ng', message: 'Such a name is not exit'}
+      return
+    end
+    # render 'show', formats: 'json'
     if @user.authenticate_only_login_key?(params)
       render 'show', formats: 'json'
     else
@@ -18,7 +23,7 @@ class UsersController < ApplicationController
   end
 
   #  PATCH /users/:name/status?login_key
-  # ユーザのステータス更新を行う
+  # ユーザのステータス更新を行う。必要ないかもしれないかもしれないので削除するかも？
   def update
     @user = User.find_by(name: params[:name])
     for param in params[:user]

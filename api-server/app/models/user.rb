@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :item
   validates :name,:login_key, :device_id, presence: true, uniqueness: true
 
+  # ログインキーを生成する
   def create_login_key
     write_attribute(:login_key, SecureRandom.base64(8))
   end

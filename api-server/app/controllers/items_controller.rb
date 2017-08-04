@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
   def index
     # 全アイテムの情報を表示する(デバッグ用)
-    @items = Item.all.as_json
+    @items = Item.all.as_json(except: ['updated_at', 'created_at'])
     render json: @items
   end
 
