@@ -1,32 +1,20 @@
 Rails.application.routes.draw do
+  get 'results/show'
+
+  get 'results/update'
+
   resources :items
-  # get 'items/index' to
-  #
-  # get 'items/show'
-  #
-  # get 'items/create'
-  #
-  # get 'items/update'
-  #
-  # get 'items/destroy'
-
-
-
   resources :users
   post '/signup', to: 'users#create'
-  patch '/status', to: 'users#update_show'
+  patch '/status', to: 'users#update'
   delete '/logout',  to: 'sessions#destroy'
-  patch '/signup', to: 'users#update'
   get '/users/:name/status',  to: 'users#show'
-  patch '/users/:name/status',  to: 'users#update_show'
+  patch '/users/:name/status',  to: 'users#update'
   get '/users/:name/items',  to: 'items#show'
   post '/users/:name/items',  to: 'items#create'
-
-  get 'users/index'
-  # post 'users/create'
-  # get 'users/show'
-  # patch 'users/update'
-  # delete 'users/destroy'
+  patch '/users/:name/items',  to: 'items#update'
+  get '/users/:name/results',  to: 'results#show'
+  patch '/users/:name/results',  to: 'results#update'
 
 
 end
