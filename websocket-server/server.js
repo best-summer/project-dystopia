@@ -2,7 +2,6 @@ var fs = require("fs");
 var http = require("http");
 var io = require("socket.io");
 var aws = require('aws-sdk');
-var uuid = require('node-uuid');
 var colors = require('colors');
 var _rooms = require('./rooms');
 
@@ -89,14 +88,13 @@ var get_rooms = function(socket, props) {
 }
 
 var start_match = function(socket, props) {
-  var assign_room_id = _rooms.waiting();
-  if (assign_room_id == null)
-    assign_room_id = _rooms.add(socket, props);
-  else
-    _rooms.join(assign_room_id, socket, props);
-  var assign_room = _rooms.get(assign_room_id);
+  var room_id = _rooms.waiting();
+  if (room_id == null)
+    room_id = _rooms.add(socket, props);
+  _rooms.join(room_id, socket, props);
   emit(socket, { type: `start_match`, room_id: assign_room_id });
-  if (assign_room.players.length == 2)
+  var room = _rooms.get(room_id);
+  if (room.players.length === 2)
     complete_match(socket, props);
 }
 
