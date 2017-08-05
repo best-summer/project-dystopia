@@ -79,11 +79,18 @@ module.exports = class Rooms {
     return this.self[room_id];
   }
 
+  /**
+   * Get a room_id of waiting room.
+   * @param {Object} socket A socket of socket.io.
+   * @param {Object} props Properties from a client.
+   * @return {String} Room id.
+   */
   waiting() {
     var room_id = null;
-    this.self.forEach(function(room) {
-      if (room.players.length > 1)
-        room_id = room.room_id;
+    var rooms = this.self;
+    Object.keys(rooms).forEach(function(room_id_) {
+      if (room.players.length === 1)
+        room_id = room_id_;
     });
     return room_id;
   }
