@@ -23,11 +23,7 @@ class ItemsController < ApplicationController
     @user = User.find_by(name: params[:name])
     @item = Item.new(name: params[:item][:name], value: params[:item][:value],
                      number: params[:item][:number], user_id: @user.id)
-    # DBの初期値をnilから0に変更すればこの処理は必要なくなるはず
-    if @user[:billing].nil?
-      @user[:billing] = 0
-    end
-    # ユーザの課金合計額にアイテムの価格を加算しておく
+    # ユーザの課金合計額にアイテムの価格を加算していく
     @user[:billing] += @item[:value] * @item[:number]
     @user.save
     if @user.authenticate_only_login_key?(params) && @item.save

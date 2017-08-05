@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170804081801) do
+ActiveRecord::Schema.define(version: 20170805034025) do
 
   create_table "items", force: :cascade do |t|
     t.string   "name"
@@ -28,12 +28,14 @@ ActiveRecord::Schema.define(version: 20170804081801) do
     t.integer  "score",                default: 0
     t.integer  "billing",              default: 0
     t.string   "rank",                 default: "C"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.string   "login_key"
     t.integer  "win_count",            default: 0
     t.integer  "lose_count",           default: 0
     t.integer  "summer_vacation_days", default: 0
+    t.         "equipment1",           default: "None"
+    t.         "equipment2",           default: "None"
   end
 
 end

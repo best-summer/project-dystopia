@@ -14,7 +14,6 @@ class UsersController < ApplicationController
       render json: {status: 'ng', message: 'Such a name is not exit'}
       return
     end
-    # render 'show', formats: 'json'
     if @user.authenticate_only_login_key?(params)
       render 'show', formats: 'json'
     else
@@ -23,20 +22,19 @@ class UsersController < ApplicationController
   end
 
   #  PATCH /users/:name/status?login_key
-  # ユーザのステータス更新を行う。必要ないかもしれないかもしれないので削除するかも？
+  # ユーザの装備ステータスを更新する
   def update
     @user = User.find_by(name: params[:name])
     for param in params[:user]
-      if param == 'login_key'
-        next
-      end
-      @user[param] = params[:user][param]
+      next if param != 'equipment1' or param!= 'equipment2'
     end
 
     if @user.authenticate_only_login_key?(params) && @user.save
       render 'update', formats: 'json'
-    else
+    elsif ! @user.authenticate_only_login_key?(params)
       render json: {status: 'ng', message: 'Wrong login key'}
+    elsif ! @user.save
+      render json: {status: 'ng', message: 'Wrong parameter'}
     end
   end
 
