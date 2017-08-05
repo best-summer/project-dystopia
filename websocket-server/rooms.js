@@ -52,8 +52,21 @@ module.exports = class Rooms {
     room.players.push(player);
   }
 
+  /**
+   * Leave a room.
+   * @param {Object} socket A socket of socket.io.
+   * @param {Object} props Properties from a client.
+   * @return {String} Room id.
+   */
   leave(room_id, socket, props) {
-
+    var room = this.self[room_id];
+    var players = room.players;
+    players.forEach(function(player, index) {
+      if (player.device_id === props.device_id)
+        players.splice(index, 1);
+    });
+    if (players.length === 0)
+      this.remove(room_id);
   }
 
   get(room_id) {
