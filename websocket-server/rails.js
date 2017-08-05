@@ -119,7 +119,7 @@ class Items {
     });
   }
 
-  set(new_props, callback) {
+  add(new_props, callback) {
     var options = {
       url: END_POINT + 
            `users/` + this.user_name +
