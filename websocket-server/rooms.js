@@ -1,9 +1,8 @@
-// RingBuffer
+var uuid = require('node-uuid');
+
 module.exports = class Rooms {
   constructor() {
-    this.self = new Array(100);
-    this.count = 0;
-    this.maxCount = 100;
+    this.self = {};
   }
 
   /**
