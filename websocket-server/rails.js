@@ -7,7 +7,7 @@ module.exports = class Rails {
 
   signup(props) {
     var options = {
-      uri: END_POINT + `signup`,
+      url: END_POINT + `signup`,
       headers: { "Content-type": "application/json" },
       json: props
     };
@@ -44,7 +44,7 @@ class Users {
 
   list(callback) {
     var options = {
-      uri: END_POINT + `users`,
+      url: END_POINT + `users`,
     };
     request.get(options, function (error, response, body) {
       callback(body);
@@ -53,7 +53,9 @@ class Users {
 
   status(callback) {
     var options = {
-      uri: END_POINT + `users/` + this.user_name + `/status`,
+      url: END_POINT +
+           `users/` + this.user_name +
+           `/status?login_key=` + this.login_key,
     };
     request.get(options, function (error, response, body) {
       callback(body);
@@ -70,7 +72,7 @@ class Users {
   results(new_props, callback) {
     var get = function(callback) {
       var options = {
-        uri: END_POINT + `users/` + this.user_name + `/results`,
+        url: END_POINT + `users/` + self.user_name + `/results`,
       };
       request.get(options, function (error, response, body) {
         callback(body);
@@ -78,7 +80,7 @@ class Users {
     }
     var set = function(new_props, callback) {
       var options = {
-        uri: END_POINT + `users/` + this.user_name + `/results`,
+        url: END_POINT + `users/` + self.user_name + `/results`,
       };
       request.patch(options, function (error, response, body) {
         callback(body);
@@ -99,7 +101,9 @@ class Items {
 
   get(callback) {
     var options = {
-      uri: END_POINT + `users/` + this.user_name + `/items`,
+      url: END_POINT +
+           `users/` + this.user_name +
+           `/items?login_key=` + this.login_key,
     };
     request.get(options, function (error, response, body) {
       callback(body);
@@ -108,8 +112,8 @@ class Items {
 
   set(new_props, callback) {
     var options = {
-      uri: END_POINT + `users/` + this.user_name + `items`,
       json: new_props
+      url: END_POINT + `users/` + this.user_name + `/items`,
     };
     request.post(options, function (error, response, body) {
       callback(body);
@@ -118,7 +122,7 @@ class Items {
 
   list(callback) {
     var options = {
-      uri: END_POINT + `items`,
+      url: END_POINT + `items`,
       json: new_props
     };
     request.get(options, function (error, response, body) {
