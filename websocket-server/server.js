@@ -1,9 +1,11 @@
 var fs = require("fs");
 var http = require("http");
+var request = require("request");
 var io = require("socket.io");
 var aws = require('aws-sdk');
 var colors = require('colors');
 var _rooms = require('./rooms');
+var rails = require('./rails');
 
 // var _rooms = [];
 var _time = 0;
@@ -19,6 +21,7 @@ http = http.createServer(function (req, res) {
 }).listen(3000);
 
 io = io.listen(http);
+
 
 io.sockets.on("connection", function (socket) {
 
@@ -141,9 +144,42 @@ var leave_room = function(socket, props) {
 }
 
 var game_start = function(socket, props) {
-  // Rails.
+  // rails.signup({ name: `Yun11`, device_id: '000011' }, function(user) {
+    // user.list(function (body) {
+    //   console.log(body);
+    // });
+    var user = rails.users(`Yun11`, `9UX2cBqhPZg=`);
+    console.log(user);
+    user.status.get(function(body) {
+      // console.log(body);
+    });
+    user.items.get(function(body) {
+      console.log(body);
+    });
+    // user.items.set({
+    //   name: `TestBall`,
+    //   login_key: this.login_key,
+    //   value: '100',
+    //   number: '1'
+    // }, function (body) {
+    //   console.log(body);
+    // });
+    user.items.get(function(body) {
+      console.log(body);
+    });
+    // user.results(null, function (body) {
+      // console.log(body);
+    // });
+    // user.results({ "score": "200", "vs": "win", "login_key": user.login_key }, function (body) {
+      // console.log(body);
+    // });
+    user.results.get(function(body) {
+      console.log(body);
+    });
+  // });
 }
 
+game_start();
 var game_finish = function(socket, props) {
   // Rails.
 }
