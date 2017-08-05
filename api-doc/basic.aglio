@@ -1,146 +1,163 @@
 FORMAT: 1A
 
-# project-dystopia基本機能API設計
+# project-dystopia API
 
-<<<<<<< HEAD
-## サインアップ処理 [/signup]
-=======
-## 初回サインアップ処理 [/signup]
-接続先->Rails
->>>>>>> refs/remotes/origin/master
+## ユーザ登録 [/signup]
 
-### 初回サインアップリクエスト [POST]
-サーバーへデバイスIDとユーザー名を渡して登録処理を行う。
-DB上に重複したデバイスIDかユーザ名がある場合は登録処理は行われない。
+### サインアップ[POST]
 
-登録に成功したときはDB上にbase64乱数を生成して登録する。
-device_idにはIMEIを使用(15桁の数字)。ソートの必要はないので文字列で渡す。
+ - DB上に重複したデバイスIDかユーザ名がある場合は登録処理は行われない。
+ - 登録が成功した場合はログインキー(アクセストークン)を返却する
+
 
 + Request (application/json)
   {
-    "device_id":"35-209900-176148-1",
-    "name":"Nenecchi"
+    "device_id":"35-209900-176148-1", デバイスID
+    "name":"nenecchi" ユーザ名
   }
 
-レスポンスは次回以降の認証用にログインキーを渡す。
 
 + Response 200 (application/json)
   {
-    "login_key":"{乱数で生成された文字列}"
+    "login_key":"{base64文字列}" ログインキー
+  }
+  
++ Response 300 (application/json)
+  {
+  	"status":"ng","message":"user_id or device_id is duplicated"
   }
 
-<<<<<<< HEAD
-## ログイン処理　***未実装*** [/login{?device_id,login_key}]
 
-=======
-## ログイン処理 [/login{?device_id,login_key}]
-接続先->Rails
->>>>>>> refs/remotes/origin/master
-+ Parameters
-    + device_id (string) - 端末のIMEI、ハイフンの入る15桁の数字
-    + login_key (string) - ログインキー、サインアップ時に配布
+## ユーザステータス表示 [/users/:name/status?login_key=]
+
+### ステータス表示[GET]
+
+ - ログインキーを使ってユーザの情報を表示する
+
++ Response 200 (application/json)
+	{
+		"user_name":"nenecchi", ユーザ名
+		"score":0, スコア
+		"rank":0, ランク
+		"win_count":0, 勝数
+		"lose_count":0,負数
+		"summer_vacation_days":0 残り夏休み日数
+	}
+  
++ Response 300 (application/json)
+  {
+    "status":"ng","message":"Wrong login key"
+  }
 
 
-### ログインリクエスト [GET]
-ログインリクエストを行う。特に意味はないが何かに使えるかもしれないので一応リクエスト
-(ログインボーナスとか)
+
+## ユーザ装備更新 [/users/:name/status]
+
+### 装備更新[PATCH]
+
+ - ユーザの装備を更新する
+ - ユーザは装備を2つ持つことが可能
+	 - 各装備は`equipment1`、`equipment2`で表現される
+	 - 一度に2つ更新することも可能
+
+
++ Request (application/json)
+	{
+	  	"equipment1":"SuperBall,装備スロット
+	  	"login_key":"LOGIN_KEY" ログインキー
+   }
+
++ Response 200 (application/json)
+	{
+		"user_name":"Nenecchi" ユーザ名
+		"equipment1": "SuperBall", 装備したアイテム
+		"equipment2": "None", 装備したアイテム
+		"login_key":"LOGIN_KEY" ログインキー
+	}
+  
++ Response 300 (application/json)
+  {
+    "status":"ng","message":"Wrong login key"
+  }
+
+## アイテム表示 [/users/:name/items?login_key=]
+
+### ステータス表示[GET]
+
+ - ログインキーを使ってユーザのアイテムを表示する
+
++ Response 200 (application/json)
+	{
+	"items":
+		[
+			{
+				"name":"SuperBall",　アイテムの名前
+				"value":200, 価格
+				"number":1　アイテムの個数
+			}
+		]
+	}
+  
++ Response 300 (application/json)
+  {
+    "status":"ng","message":"Wrong login key"
+  }
+
+
+## アイテム作成 [/users/:name/items]
+
+### アイテム作成[POST]
+
+ - アイテムを作成する
+ - アイテムは各ユーザに紐づく
+ - アイテムの所有数に上限はない
+
+ + Request (application/json)
+	{
+		"name": "SuperBall", アイテム名
+		"value": "200", 価格
+		"number": "2"　アイテムの個数
+		"login_key": "LOGIN_KEY", ログインキー
+
+	}
+
 
 + Response 200 (application/json)
   {
-
+  	"name":"SuperBall",
+		"value":200,
+		"number":2
+  }
+  
++ Response 300 (application/json)
+  {
+    "status":"ng","message":"Wrong login key"
   }
 
-<<<<<<< HEAD
-## ステータス取得処理 [/users/:name/status?login_key]
 
-=======
-## ステータス取得処理 [/status{?device_id,login_key}]
-接続先->Rails
->>>>>>> refs/remotes/origin/master
-+ Parameters
-    + login_key (string) - ログインキー、サインアップ時に配布
+## ゲームスコア更新 [/users/:name/results]
 
-### ステータス取得リクエスト [GET]
-ユーザの情報を表示する
+### アイテム[POST]
+ - 試合結果を送信する
+ - 試合終了後に両プレイヤーにそれぞれ結果を送信することを想定している
+
+ + Request (application/json)
+	{
+		"score": "200", スコア
+		"vs": "win",　勝ち負けを送信(勝ったとは`win`、負けたときは`lose`)
+		"login_key": "LOGIN_KEY"　ログインキー
+	}
+
 
 + Response 200 (application/json)
-  { 
-    "name": Nenecchi,
-    "score":79832,
-    "win_count":10,
-    "loose_count":5,
-    "rank":"42",
-    "summer_vacation_days": 32
+  {
+		"win_count":1, 勝数
+		"lose_count":0,　負け数
+		"summer_vacation_days":0 残り夏休み日数
   }
-## ステータス更新処理　  [/users/:name/status?login_key]
-### ステータス更新リクエスト [PATCH]
-ユーザの情報を更新する
-
-+ Request (application/json)
-{
-    "name": Aocchi,
-    "score": 810,
-    "win_count": 432,
-    "loose_count": 225,
-    "rank": 12,
-    "summer_vacation_days": 1
-}
-
-+ Response 200 (application/json)
-  { 
-    "name": Aocchi,
-    "score":810,
-    "win_count":432,
-    "loose_count":225,
-    "rank":12,
-    "summer_vacation_days": 1
+  
++ Response 300 (application/json)
+  {
+    "status":"ng","message":"Wrong login key"
   }
 
-<<<<<<< HEAD
-
-## 所持アイテム取得処理 [/users/:name/items?login_key]
-
-=======
-## 装備変更処理 [/weapon{?device_id,login_key}]
-接続先->Rails
->>>>>>> refs/remotes/origin/master
-+ Parameters
-    + login_key (string) - ログインキー、サインアップ時に配布
-
-### ステータス取得リクエスト [GET]
-ユーザの所持しているアイテムの情報を表示する。
-
-所持しているアイテムの種類に応じて返却されるJSONデータの個数が変化する。
-
-(現在アイテムの個数が表示されない。修正予定。)
-
-+ Response 200 (application/json)
-  { 
-    "name": "SuperBall",
-    "value": 450
-    "number": 5
-  }
-
-  { 
-    "name": "UltraBall",
-    "value":50000000 
-    "number": 1
-  }
-
-## ステータス更新処理　  [/users/:name/items?login_key]
-### ステータス更新リクエスト [PATCH]
-アイテム名と個数を送信し、ユーザの持っているアイテムの個数を変更する。
-(現在返却されるデータが少し違う。修正予定)
-
-+ Request (application/json)
-{
-    "name": "UltraBall",
-    "number": 3
-}
-
-+ Response 200 (application/json)
-  { 
-    "name": "UltraBall",
-    "value": 50000000,
-    "number": 3
-  }
