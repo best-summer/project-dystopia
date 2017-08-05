@@ -36,8 +36,20 @@ module.exports = class Rooms {
     delete this.self[room_id];
   }
 
+  /**
+   * Join into a room.
+   * @param {String} room_id Room id.
+   * @param {Object} socket A socket of socket.io.
+   * @param {Object} props Properties from a client.
+   */
   join(room_id, socket, props) {
-    
+    var player = {
+      socket_id: socket.id,
+      device_id: props.device_id,
+      user_name: props.user_name
+    };
+    var room = this.self[room_id];
+    room.players.push(player);
   }
 
   leave(room_id, socket, props) {
