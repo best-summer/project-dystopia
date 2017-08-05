@@ -6,18 +6,24 @@ module.exports = class Rooms {
     this.maxCount = 100;
   }
 
+  /**
+   * Add a room.
+   * @param {Object} socket A socket of socket.io.
+   * @param {Object} props Properties from a client.
+   * @return {String} Room id.
+   */
   add(socket, props) {
-    var assign_room_id = this.count;
-    this.self[this.count] = {
-      room_id: assign_room_id,
+    var room_id = uuid.v1();
+    var room = {
+      room_id: room_id,
       players: [{
         socket_id: socket.id,
         device_id: props.device_id,
         user_name: props.user_name
       }]
     };
-    this.count = (this.count + 1) % this.maxCount;
-    return assign_room_id;
+    this.self[room_id] = room;
+    return room_id;
   }
 
   remove(room_id) {
