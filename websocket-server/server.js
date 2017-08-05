@@ -99,7 +99,7 @@ var start_match = function(socket, props) {
 }
 
 var cancel_match = function(socket, props) {
-  _rooms.remove(props.room_id);
+  _rooms.leave(props.room_id, socket, props);
   emit(socket, { type: `cancel_match` });
 }
 
