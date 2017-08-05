@@ -69,6 +69,12 @@ module.exports = class Rooms {
       this.remove(room_id);
   }
 
+  /**
+   * Get a room.
+   * @param {Object} socket A socket of socket.io.
+   * @param {Object} props Properties from a client.
+   * @return {String} Room id.
+   */
   get(room_id) {
     return this.self[room_id];
   }
