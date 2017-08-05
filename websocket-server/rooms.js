@@ -94,8 +94,4 @@ module.exports = class Rooms {
     });
     return room_id;
   }
-
-  count() {
-    return this.count;
-  }
 }
