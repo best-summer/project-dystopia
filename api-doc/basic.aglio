@@ -115,7 +115,7 @@ FORMAT: 1A
  + Request (application/json)
 	{
 		"name": "SuperBall", アイテム名
-		"value": "100", 価格
+		"value": "200", 価格
 		"number": "2"　アイテムの個数
 		"login_key": "LOGIN_KEY", ログインキー
 
@@ -124,7 +124,9 @@ FORMAT: 1A
 
 + Response 200 (application/json)
   {
-  	"id":1,"name":"SuperBall","value":200,"user_id":1,"number":2
+  	"name":"SuperBall",
+		"value":200,
+		"number":2
   }
   
 + Response 300 (application/json)
