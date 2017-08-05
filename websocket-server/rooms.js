@@ -26,11 +26,14 @@ module.exports = class Rooms {
     return room_id;
   }
 
+  /**
+   * Remove a room.
+   * @param {Object} socket A socket of socket.io.
+   * @param {Object} props Properties from a client.
+   * @return {String} Room id.
+   */
   remove(room_id) {
-    this.self[room_id] = {
-      room_id: room_id,
-      players: []
-    };
+    delete this.self[room_id];
   }
 
   join(room_id, socket, props) {
