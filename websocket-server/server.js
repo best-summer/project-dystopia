@@ -2,9 +2,15 @@ var fs = require("fs");
 var http = require("http");
 var io = require("socket.io");
 var aws = require('aws-sdk');
-var uuid = require('node-uuid');
 var colors = require('colors');
+var _rooms = require('./rooms');
 
+// var _rooms = [];
+var _time = 0;
+var _scores = [];
+
+var _rooms_head = 0;
+var _rooms_tail = 0;
 
 http = http.createServer(function (req, res) {
   res.writeHead(200, { "Content-Type": "text/html" });
@@ -13,12 +19,6 @@ http = http.createServer(function (req, res) {
 }).listen(3000);
 
 io = io.listen(http);
-
-
-var _rooms = [];
-var _time = 0;
-var _scores = [];
-
 
 io.sockets.on("connection", function (socket) {
 
@@ -85,6 +85,26 @@ var get_rival_player = function(socket, props) {
 
 var get_rooms = function(socket, props) {
   emit(socket, { type: props.type, rooms: _rooms });
+}
+
+var start_match = function(socket, props) {
+  var room_id = _rooms.waiting();
+  if (room_id == null)
+    room_id = _rooms.add(socket, props);
+  _rooms.join(room_id, socket, props);
+  emit(socket, { type: `start_match`, room_id: assign_room_id });
+  var room = _rooms.get(room_id);
+  if (room.players.length === 2)
+    complete_match(socket, props);
+}
+
+var cancel_match = function(socket, props) {
+  _rooms.leave(props.room_id, socket, props);
+  emit(socket, { type: `cancel_match` });
+}
+
+var complete_match = function(socket, props) {
+  emit(socket, { type: `complete_match`, })
 }
 
 var join_room = function(socket, props) {
