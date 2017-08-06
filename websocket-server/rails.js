@@ -13,13 +13,13 @@ module.exports = class Rails {
       url: END_POINT + `signup`,
       headers: { "Content-type": "application/json" },
       json: {
-        name: props.name,
+        name: props.user_name,
         device_id: props.device_id
       }
     };
     request.post(options, function (error, response, body) {
       console.log(body);
-      callback(new Users(body.user_name, body.login_key));
+      callback(body, new Users(body.user_name, body.login_key));
     });
   }
 
