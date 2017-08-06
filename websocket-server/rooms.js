@@ -1,6 +1,6 @@
 var uuid = require('node-uuid');
 
-module.exports = class Rooms {
+class Rooms {
   constructor() {
     this.self = {};
   }
@@ -88,9 +88,11 @@ module.exports = class Rooms {
     var room_id = null;
     var rooms = this.self;
     Object.keys(rooms).forEach(function(room_id_) {
-      if (room.players.length === 1)
+      if (rooms[room_id_].players.length === 1)
         room_id = room_id_;
     });
     return room_id;
   }
 }
+
+module.exports = new Rooms();
