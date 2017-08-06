@@ -24,11 +24,11 @@ module.exports = class Rails {
   }
 
   // Rails.users();
-  // Rails.users(`Nenecchi`).status();
-  // Rails.users(`Nenecchi`).items(null);
-  // Rails.users(`Nenecchi`).items({ name: `SuperBall` });
-  // Rails.users(`Nenecchi`).results(null);
-  // Rails.users(`Nenecchi`).results({ score: 200, vs: `win` });
+  // Rails.users(`Nenecchi`).status.get();
+  // Rails.users(`Nenecchi`).items.get();
+  // Rails.users(`Nenecchi`).items.add({ name: `SuperBall` });
+  // Rails.users(`Nenecchi`).results.get();
+  // Rails.users(`Nenecchi`).results.set({ score: 200, vs: `win` });
   static users(user_name, login_key) {
     console.log(Users);
     if (user_name && login_key)
