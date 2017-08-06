@@ -23,7 +23,22 @@ module.exports = class Rails {
     });
   }
 
-  // Rails.users();
+  static signin(props, callback) {
+    Rails.users().list(function(body) {
+      var result_user = null;
+      body = JSON.parse(body);
+      body.forEach(function(user) {
+        if (user.name === props.user_name)
+          result_user = user;
+      });
+      if (result_user)
+        callback({ status: 'ok' }, result_user);
+      else
+        callback({ status: 'ng', message: 'Not exist user.' });
+    });
+  }
+
+  // Rails.users().list();
   // Rails.users(`Nenecchi`).status.get();
   // Rails.users(`Nenecchi`).items.get();
   // Rails.users(`Nenecchi`).items.add({ name: `SuperBall` });
@@ -34,7 +49,7 @@ module.exports = class Rails {
     if (user_name && login_key)
       return new Users(user_name, login_key);
     else
-      return (new Users()).list();
+      return new Users();
   }
 
   // Rails.items();
