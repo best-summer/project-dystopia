@@ -31,8 +31,13 @@ class Players {
     return result;
   }
 
-  rivalOf(device_id, room_id) {
+  rivalOf(device_id) {
     var result = null;
+    var room_id = null;
+    this.self.forEach(function(player) {
+      if (player.device_id === device_id)
+        room_id = player.room_id;
+    });
     this.self.forEach(function(player) {
       if (player.room_id === room_id && player.device_id !== device_id)
         result = player;
