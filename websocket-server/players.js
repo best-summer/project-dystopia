@@ -19,7 +19,7 @@ class Players {
     this.self.forEach(function(player, index) {
       if (player.device_id === device_id)
         this.self.splice(index, 1);
-    });
+    }.bind(this));
   }
 
   get(device_id) {
@@ -27,7 +27,7 @@ class Players {
     this.self.forEach(function(player) {
       if (player.device_id === device_id)
         result = player;
-    });
+    }.bind(this));
     return result;
   }
 
@@ -37,11 +37,11 @@ class Players {
     this.self.forEach(function(player) {
       if (player.device_id === device_id)
         room_id = player.room_id;
-    });
+    }.bind(this));
     this.self.forEach(function(player) {
       if (player.room_id === room_id && player.device_id !== device_id)
         result = player;
-    });
+    }.bind(this));
     return result;
   }
 }
