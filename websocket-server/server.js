@@ -135,8 +135,14 @@ var start_match = function(socket, props) {
 }
 
 var cancel_match = function(socket, props) {
-  _rooms.leave(props.room_id, socket, props);
-  emit(socket, { type: `cancel_match` });
+  var player = players.get(props.device_id);
+  if (player == null) {
+    emit(socket.id, { type: `cancel_match`, status: 'ng', message: `Not exists user.` });
+    return;
+  }
+  players.remove(player.device_id);
+  _rooms.leave(player.room_id, socket, props);
+  emit(socket.id, { type: `cancel_match` });
 }
 
 var complete_match = function(room_id) {
