@@ -16,4 +16,6 @@ class User < ApplicationRecord
   def authenticate_only_login_key?(params)
     self.login_key == params[:login_key]
   end
+
+
 end

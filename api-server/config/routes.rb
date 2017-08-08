@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   post '/signup', to: 'users#create'
   patch '/status', to: 'users#update'
   delete '/logout',  to: 'sessions#destroy'
+  post '/gacha',  to: 'items#gacha'
+
   get '/users/:name/status',  to: 'users#show'
   patch '/users/:name/status',  to: 'users#update'
   get '/users/:name/items',  to: 'items#show'
@@ -15,6 +17,7 @@ Rails.application.routes.draw do
   patch '/users/:name/items',  to: 'items#update'
   get '/users/:name/results',  to: 'results#show'
   patch '/users/:name/results',  to: 'results#update'
+
 
 
 end
