@@ -10,21 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170805034025) do
+ActiveRecord::Schema.define(version: 20170808085018) do
 
   create_table "items", force: :cascade do |t|
-    t.string   "name"
+    t.string   "device_id"
     t.integer  "value"
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "number"
+    t.string   "name"
     t.index ["user_id"], name: "index_items_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string   "device_id"
-    t.string   "name"
     t.integer  "score",                default: 0
     t.integer  "billing",              default: 0
     t.string   "rank",                 default: "C"
@@ -34,8 +34,10 @@ ActiveRecord::Schema.define(version: 20170805034025) do
     t.integer  "win_count",            default: 0
     t.integer  "lose_count",           default: 0
     t.integer  "summer_vacation_days", default: 0
-    t.         "equipment1",           default: "None"
-    t.         "equipment2",           default: "None"
+    t.string   "equipment1",           default: "None"
+    t.string   "equipment2",           default: "None"
+    t.string   "name"
+    t.index ["device_id"], name: "index_users_on_device_id", unique: true
   end
 
 end

@@ -8,7 +8,7 @@ class ItemsController < ApplicationController
   def show
     #  POST /users/:name/items?login_key
     # ユーザの所有しているアイテムを表示する
-    @user = User.find_by(name: params[:name])
+    @user = User.find_by(device_id: params[:device_id])
     @items = @user.item
     if @user.authenticate_only_login_key?(params)
       render 'show', formats: 'json'
@@ -20,7 +20,8 @@ class ItemsController < ApplicationController
   def create
     #  POST /users/:name/items
     # ユーザのアイテムを作成する
-    @user = User.find_by(name: params[:name])
+    p params
+    @user = User.find_by(device_id: params[:device_id])
     @item = Item.new(name: params[:item][:name], value: params[:item][:value],
                      number: params[:item][:number], user_id: @user.id)
     # ユーザの課金合計額にアイテムの価格を加算していく
@@ -31,15 +32,15 @@ class ItemsController < ApplicationController
     elsif !@user.authenticate_only_login_key?(params)
       render json: {status: 'ng', message: 'Wrong login key'}
     elsif !@item.save
-      render json: {status: 'ng', message: 'Item is already exists or Key is not enough'}
+      render json: {status: 'ng', message: 'Item is already exists or key is not enough'}
     end
   end
 
   #  PATCH /users/:name/items
   # ユーザのアイテム情報の更新をする
   def update
-    @user = User.find_by(name: params[:name])
-    @item = @user.item.find_by(name: params[:item][:name])
+    @user = User.find_by(device_id: params[:device_id])
+    @item = @user.item.find_by(device_id: params[:item][:device_id])
     if @item.nil?
       render json: {status: 'ng', message: 'user_name or item_name is wrong'}
       return
@@ -59,7 +60,7 @@ class ItemsController < ApplicationController
   # ガチャでアイテムを購入する
   # POST /gacha
   def gacha
-    @user = User.find_by(name: params[:name])
+    @user = User.find_by(device_id: params[:device_id])
     if @user.nil?
       render json: {status: 'ng', message: 'Such a name is not exit'}
       return
@@ -76,8 +77,6 @@ class ItemsController < ApplicationController
       @user[:billing] += 3000
       probability = 0.7
     end
-    p "========"
-    p probability
 
     # probability = 0.3
     # アイテム抽選
@@ -93,8 +92,6 @@ class ItemsController < ApplicationController
       rarity = 'N'
     end
     render json: {rarity: rarity}
-
-
   end
 
   def destroy

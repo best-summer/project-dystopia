@@ -9,7 +9,7 @@ class UsersController < ApplicationController
   # GET /users/:name/status?login_key
   # ユーザのステータスを表示する
   def show
-    @user = User.find_by(name: params[:name])
+    @user = User.find_by(device_id: params[:device_id])
     if @user.nil?
       render json: {status: 'ng', message: 'Such a name is not exit'}
       return
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
   #  PATCH /users/:name/status?login_key
   # ユーザの装備ステータスを更新する
   def update
-    @user = User.find_by(name: params[:name])
+    @user = User.find_by(device_id: params[:device_id])
     for param in params[:user]
       next if param != 'equipment1' or param!= 'equipment2'
     end
@@ -41,7 +41,8 @@ class UsersController < ApplicationController
   #  POST /signup
   # ユーザの登録を行う
   def create
-    @user = User.new(name: params[:name], device_id: params[:device_id])
+    p user_params
+    @user = User.new(user_params)
     @user.create_login_key
     if @user.save
       render 'create', formats: 'json'
@@ -54,10 +55,9 @@ class UsersController < ApplicationController
     @user.destroy
   end
 
-  def user_params
-    params.require(:user).permit(:name, :score, :billing,
-                                 :win_count, :lose_count,
-                                 :summer_vacation_days, :login_key)
-  end
+  private
+    def user_params
+      params.require(:user).permit(:name, :device_id)
+    end
 end
 
