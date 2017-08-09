@@ -24,10 +24,11 @@ class ItemsController < ApplicationController
     @user = User.find_by(device_id: params[:device_id])
     @item = Item.new(name: params[:item][:name], value: params[:item][:value],
                      number: params[:item][:number], user_id: @user.id)
-    # ユーザの課金合計額にアイテムの価格を加算していく
-    @user[:billing] += @item[:value] * @item[:number]
-    @user.save
+
     if @user.authenticate_only_login_key?(params) && @item.save
+      # ユーザの課金合計額にアイテムの価格を加算していく。モデルに移動予定
+      @user[:billing] += @item[:value] * @item[:number]
+      @user.save
       render 'create', formats: 'json'
     elsif !@user.authenticate_only_login_key?(params)
       render json: {status: 'ng', message: 'Wrong login key'}
