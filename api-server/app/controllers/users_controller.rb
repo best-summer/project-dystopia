@@ -9,12 +9,11 @@ class UsersController < ApplicationController
   # GET /users/:name/status?login_key
   # ユーザのステータスを表示する
   def show
-    @user = User.find_by(name: params[:name])
+    @user = User.find_by(device_id: params[:device_id])
     if @user.nil?
       render json: {status: 'ng', message: 'Such a name is not exit'}
       return
     end
-    # render 'show', formats: 'json'
     if @user.authenticate_only_login_key?(params)
       render 'show', formats: 'json'
     else
@@ -23,27 +22,27 @@ class UsersController < ApplicationController
   end
 
   #  PATCH /users/:name/status?login_key
-  # ユーザのステータス更新を行う。必要ないかもしれないかもしれないので削除するかも？
+  # ユーザの装備ステータスを更新する
   def update
-    @user = User.find_by(name: params[:name])
+    @user = User.find_by(device_id: params[:device_id])
     for param in params[:user]
-      if param == 'login_key'
-        next
-      end
-      @user[param] = params[:user][param]
+      next if param != 'equipment1' or param!= 'equipment2'
     end
 
     if @user.authenticate_only_login_key?(params) && @user.save
       render 'update', formats: 'json'
-    else
+    elsif ! @user.authenticate_only_login_key?(params)
       render json: {status: 'ng', message: 'Wrong login key'}
+    elsif ! @user.save
+      render json: {status: 'ng', message: 'Wrong parameter'}
     end
   end
 
   #  POST /signup
   # ユーザの登録を行う
   def create
-    @user = User.new(name: params[:name], device_id: params[:device_id])
+    p user_params
+    @user = User.new(user_params)
     @user.create_login_key
     if @user.save
       render 'create', formats: 'json'
@@ -56,10 +55,9 @@ class UsersController < ApplicationController
     @user.destroy
   end
 
-  def user_params
-    params.require(:user).permit(:name, :score, :billing,
-                                 :win_count, :lose_count,
-                                 :summer_vacation_days, :login_key)
-  end
+  private
+    def user_params
+      params.require(:user).permit(:name, :device_id)
+    end
 end
 
