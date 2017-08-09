@@ -10,16 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170808085018) do
+ActiveRecord::Schema.define(version: 20170809092750) do
 
   create_table "items", force: :cascade do |t|
     t.string   "device_id"
     t.integer  "value"
     t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.integer  "number"
     t.string   "name"
+    t.string   "rarity",     default: "None"
     t.index ["user_id"], name: "index_items_on_user_id"
   end
 

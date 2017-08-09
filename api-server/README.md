@@ -49,5 +49,8 @@
 	{"win_count":2,"lose_count":1,"summer_vacation_days":0}
 	
 
+### ガチャ
+	curl http://localhost:3000/gacha -X POST -H "Content-Type: application/json" -d '{ "name": "Nenecchi", "device_id":"NenecchiID", "value":"low"}'
+	{"status":"new","normal":"Super Rare","rarity":"SR"}
 	
 	

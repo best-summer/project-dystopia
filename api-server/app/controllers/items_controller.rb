@@ -61,7 +61,10 @@ class ItemsController < ApplicationController
   # ガチャでアイテムを購入する
   # POST /gacha
   def gacha
+    p params
     @user = User.find_by(device_id: params[:device_id])
+    @item = Item.new(user_id: @user.id)
+
     if @user.nil?
       render json: {status: 'ng', message: 'Such a name is not exit'}
       return
@@ -70,29 +73,46 @@ class ItemsController < ApplicationController
     # ガチャのランクによって課金額とレア出現確率を決める
     if params[:value] == 'low'
       @user[:billing] += 500
+      @item[:value] = 500
       probability = 0.1
     elsif params[:value] == 'middle'
       @user[:billing] += 1000
+      @item[:value] = 1000
       probability = 0.3
     elsif params[:value] == 'high'
       @user[:billing] += 3000
+      @item[:value] = 3000
       probability = 0.7
     end
 
-    # probability = 0.3
     # アイテム抽選
     if rand(0..1.0) < probability
+      name = 'Rare'
       rarity  = 'R'
       if rand(0..1.0) < 0.5
+        name = 'Super Rare'
         rarity  = 'SR'
         if rand(0 ..1.0) < 0.5
           rarity  = 'SSR'
+          name = 'Special Super Rare'
         end
       end
     else
       rarity = 'N'
+      name = 'Normal'
     end
-    render json: {rarity: rarity}
+
+    @item[:name] = name
+    @item[:rarity] = rarity
+    @item[:number] = 1
+
+    if @item.save
+      render json: {status: 'new', normal: name, rarity: rarity}
+    else
+      render json: {status: 'duplicate', normal: name, rarity: rarity}
+    end
+    # 課金額を加算する
+    @user.save
   end
 
   def destroy
