@@ -63,19 +63,20 @@ def socket_server():
 
             if message == b'HIT\n':
                 pull_servo_trigger()
+                sent_message = 'Splash\n'
                 print('HIT!')
             else:
+                sent_message = 'Silent\n'
                 print('NON HIT')
 
-            # message= sent_message
-            # while True:
-            #     sent_len = clientsocket.send(sent_message)
-            #     # 全てのメセージが送信できたら終了
-            #     if sent_len == len(sent_message):
-            #         break
-            #     # 送信できなかったら終了
-            #     sent_message = sent_message[sent_len:]
-            # print('Send: {}'.format(message))
+            while True:
+                sent_len = clientsocket.send(sent_message)
+                # 全てのメセージが送信できたら終了
+                if sent_len == len(sent_message):
+                    break
+                # 送信できなかったら終了
+                sent_message = sent_message[sent_len:]
+            print('Send: {}'.format(message))
 
         clientsocket.close()
         print('Bye-Bye: {0}:{1}'.format(client_address, client_port))
