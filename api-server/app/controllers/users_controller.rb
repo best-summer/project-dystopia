@@ -6,7 +6,7 @@ class UsersController < ApplicationController
     render json: @users
   end
 
-  # GET /users/:name/status?login_key
+  # GET /users/:device_id/status?login_key
   # ユーザのステータスを表示する
   def show
     @user = User.find_by(device_id: params[:device_id])
@@ -21,13 +21,10 @@ class UsersController < ApplicationController
     end
   end
 
-  #  PATCH /users/:name/status?login_key
+  #  PATCH /users/:device_id/status?login_key
   # ユーザの装備ステータスを更新する
   def update
     @user = User.find_by(device_id: params[:device_id])
-    for param in params[:user]
-      next if param != 'equipment1' or param!= 'equipment2'
-    end
 
     if @user.authenticate_only_login_key?(params) && @user.save
       render 'update', formats: 'json'
@@ -41,7 +38,6 @@ class UsersController < ApplicationController
   #  POST /signup
   # ユーザの登録を行う
   def create
-    p user_params
     @user = User.new(user_params)
     @user.create_login_key
     if @user.save
