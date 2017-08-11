@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import socket
+import RPi.GPIO as GPIO
+import time
+import sys
 
 def pull_servo_trigger():
     """
@@ -9,9 +12,6 @@ def pull_servo_trigger():
     処理は非同期なので各動作のあとにtimerを挿入している
     """
 
-    import RPi.GPIO as GPIO
-    import time
-    
     GPIO.setmode(GPIO.BCM)
 
     gp_out = 4 # GPIOポート番号
@@ -36,7 +36,9 @@ def socket_server():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
 
-    host = '10.150.250.21' # IPアドレス
+    # host = '10.150.250.21' # IPアドレス
+    host = sys.argv[1]
+    print("Host IP Address:", host)
     port = 37564
     serversocket.bind((host, port))
     serversocket.listen(128)
