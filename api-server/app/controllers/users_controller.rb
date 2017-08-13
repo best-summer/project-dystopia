@@ -51,6 +51,8 @@ class UsersController < ApplicationController
     @user.destroy
   end
 
+  # POST /debug
+  # ユーザの全情報を表示する
   def debug
     @users = User.all.order(:id)
     render 'debug', formats: 'json'
