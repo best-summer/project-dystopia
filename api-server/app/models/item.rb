@@ -1,5 +1,5 @@
 class Item < ApplicationRecord
-  validates :name, uniqueness: true
-  validates :name, :value, :user_id, presence: true
   belongs_to :user
+  validates :user_id, uniqueness: {scope: [:name]}
+  validates :name, :value, :user_id, presence: true
 end
