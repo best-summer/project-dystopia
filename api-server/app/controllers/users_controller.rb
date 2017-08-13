@@ -1,9 +1,9 @@
 class UsersController < ApplicationController
   # /users
-  # 全ユーザの情報を表示する。更新日時はうっとうしいので除外。デバッグ用
+  # ユーザをスコアが大きい順に表示する
   def index
-    @users = User.all.as_json(except: ['updated_at', 'created_at'])
-    render json: @users
+    @users = User.all.order('score desc')
+    render 'index', formats: 'json'
   end
 
   # GET /users/:device_id/status?login_key
@@ -49,6 +49,11 @@ class UsersController < ApplicationController
 
   def destroy
     @user.destroy
+  end
+
+  def debug
+    @users = User.all.order(:id)
+    render 'debug', formats: 'json'
   end
 
   private

@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   patch '/status', to: 'users#update'
   delete '/logout',  to: 'sessions#destroy'
   post '/gacha',  to: 'items#gacha'
+  get '/debug', to: 'users#debug'
+
 
   get '/users/:device_id/status',  to: 'users#show'
   patch '/users/:device_id/status',  to: 'users#update'
