@@ -22,7 +22,7 @@ class UsersController < ApplicationController
   end
 
   #  PATCH /users/:device_id/status?login_key
-  # ユーザの装備ステータスを更新する
+  # ユーザの装備ステータスを更新する(使用しなさそうなので廃止予定)
   def update
     @user = User.find_by(device_id: params[:device_id])
 
@@ -43,7 +43,7 @@ class UsersController < ApplicationController
     if @user.save
       render 'create', formats: 'json'
     else
-      render json: {status: 'ng', message: 'user_id or device_id is duplicated'}
+      render json: {status: 'ng', massage: 'user_id or device_id is duplicated'}
     end
   end
 

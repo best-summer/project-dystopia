@@ -1,5 +1,6 @@
 json.array! @users do |user|
   json.id user.id
+  json.device_id user.device_id
   json.name user.name
   json.score user.score
   json.rank user.rank

@@ -23,11 +23,11 @@ class ItemsController < ApplicationController
     p params
     @user = User.find_by(device_id: params[:device_id])
     @item = Item.new(name: params[:item][:name], value: params[:item][:value],
-                     number: params[:item][:number], user_id: @user.id)
+                      user_id: @user.id)
 
     if @user.authenticate_only_login_key?(params) && @item.save
       # ユーザの課金合計額にアイテムの価格を加算していく。モデルに移動予定
-      @user[:billing] += @item[:value] * @item[:number]
+      @user[:billing] += @item[:value]
       @user.save
       render 'create', formats: 'json'
     elsif !@user.authenticate_only_login_key?(params)
@@ -104,7 +104,6 @@ class ItemsController < ApplicationController
 
     @item[:name] = name
     @item[:rarity] = rarity
-    @item[:number] = 1
 
     if @item.save
       render json: {status: 'new', normal: name, rarity: rarity}
