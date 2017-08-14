@@ -5,7 +5,7 @@ var io = require("socket.io");
 var aws = require('aws-sdk');
 var colors = require('colors');
 var _rooms = require('./rooms');
-var players = require('./players')
+var players = require('./players');
 var rails = require('./rails');
 
 // var _rooms = [];
@@ -92,46 +92,51 @@ var get_rooms = function(socket, props) {
   emit(socket, { type: props.type, rooms: _rooms });
 }
 
-var start_match = function(socket, props) {
-  var _user = null;
+var start_match = async function(socket, props) {
+  var user = null;
   var options = {
     user_name: props.user_name,
     device_id: props.device_id
   };
-  rails.signin(options, function(body, user) {
-    if (body.status === 'ok')
-      _user = rails.users(user.name, user.login_key);
-    // if (_user == null) {
-    //   rails.signup(options, function (body, user) {
-    //     if (body.status === 'ng')
-    //       emit(socket.id, { type: `start_match`, status: body.status, message: body.message });
-    //     else
-    //       _user = rails.users(user.name, user.login_key);
-    //   });
-    // }
-    if (_user == null) return;
-    _user.status.get(function (body) {
-      var room_id = _rooms.waiting();
-      if (room_id == null)
-        room_id = _rooms.add(socket, props);
-      else
-        _rooms.join(room_id, socket, props);
-      body = JSON.parse(body);
-      var player = {
-        user_name: props.user_name,
-        room_id: room_id,
-        device_id: props.device_id,
-        socket_id: socket.id,
-        summer_vacation_days: body.summer_vacation_days,
-        rank: body.rank
-      }
-      players.add(player);
-      emit(socket.id, { type: `start_match`, room_id: room_id });
-      if (_rooms.get(room_id).players.length === 2) {
-        complete_match(room_id);
-      }
-    });
-  });
+
+  // Signin/Signout.
+  let body = await rails.signin(options);
+  if (body.status === 'ng') {
+    let body = await rails.signup(options);
+    if (body.status === 'ng') {
+      emit(socket.id, {
+        type: `start_match`,
+        status: body.status,
+        message: body.message
+      });
+    } else {
+      user = rails.users(body.name, body.login_key);
+    }
+  } else{
+    user = body.user;
+  }
+
+  if (user == null)
+    return;
+
+  // Join to Room.
+  let status = await user.status.get();
+  const room_id = _rooms.waiting() || _rooms.add(socket, props);
+  _rooms.join(room_id, socket, props);
+  status = JSON.parse(status);
+  var player = {
+    user_name: props.user_name,
+    room_id: room_id,
+    device_id: props.device_id,
+    socket_id: socket.id,
+    summer_vacation_days: body.summer_vacation_days,
+    rank: body.rank
+  }
+  players.add(player);
+  emit(socket.id, { type: `start_match`, room_id: room_id });
+  if (_rooms.get(room_id).players.length === 2) {
+    complete_match(room_id);
+  }
 }
 
 var cancel_match = function(socket, props) {
@@ -148,11 +153,19 @@ var cancel_match = function(socket, props) {
 var complete_match = function(room_id) {
   _rooms.get(room_id).players.forEach(function(player) {
     var rival = players.rivalOf(player.device_id);
-    emit(rival.socket_id, {
-      type: `complete_match`,
-      room_id: room_id,
-      enemy: rival
-    });
+    if (rival == null) {
+      emit(player.socket_id, {
+        type: `complete_match`,
+        status: `ng`,
+        message: `players.length == 1`
+      });
+    } else {
+      emit(player.socket_id, {
+        type: `complete_match`,
+        room_id: room_id,
+        enemy: rival
+      });
+    }
   });
 }
 
