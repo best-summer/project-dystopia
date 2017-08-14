@@ -7,17 +7,29 @@
 </head>
 
 <body>
-  <button onclick="join();" id="join">join</button>
-  <button onclick="leave();" id="join">leave</button>
-  <button onclick="list();" id="join">list</button>
-  <button onclick="send();" id="join">send</button>
-  <button onclick="attack();" id="join">attack</button>
+  <button onclick="SuzukazeAoba();" id="join">SuzukazeAoba</button>
+  <button onclick="IijimaYun();" id="join">IijimaYun</button>
+  <button onclick="TakimotoHifumi();" id="join">TakimotoHifumi</button>
+  <button onclick="ShinodaHajime();" id="join">ShinodaHajime</button>
+  <button onclick="start_match();" id="join">start_match</button>
+  <button onclick="cancel_match();" id="join">cancel_match</button>
+  <!-- <button onclick="complete_match();" id="join">complete_match</button> -->
+  <!-- <button onclick="game_start();" id="join">game_start</button> -->
+  <!-- <button onclick="game_finish();" id="join">game_finish</button> -->
+  <!-- <button onclick="game_time();" id="join">game_time</button> -->
+  <!-- <button onclick="game_score();" id="join">game_score</button> -->
+  <button onclick="shoot_ball();" id="join">shoot_ball</button>
+  <button onclick="move_bar();" id="join">move_bar</button>
+  <button onclick="launch_special();" id="join">launch_special</button>
+  <button onclick="reflect_ball();" id="join">reflect_ball</button>
+  <button onclick="goal();" id="join">goal</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
   <script type="text/javascript">
     // var socketio = io.connect('http://ec2-54-201-20-190.us-west-2.compute.amazonaws.com:3000/');
     var socketio = io.connect('http://localhost:3000/');
-    var deviceId = rand(10000);
+    var deviceId = "";
+    var userName = "";
 
     function rand(max) {
       return Math.floor( Math.random() * max);
@@ -26,79 +38,99 @@
     var ballTypes = [ 'normal', 'speed', 'skeleton', 'heavy', 'special' ];
     var ballType  = ballTypes[rand(5)];
 
-    function join() {
-      socketio.emit('join', {
-        roomId: 0,
-        deviceId: deviceId,
-        name: `michael`,
+    function SuzukazeAoba() {
+      userName = "Test_" + "SuzukazeAoba";
+      deviceId = userName + "_Id"
+    }
+
+    function IijimaYun() {
+      userName = "Test_" + "IijimaYun";
+      deviceId = userName + "_Id"
+    }
+
+    function TakimotoHifumi() {
+      userName = "Test_" + "TakimotoHifumi";
+      deviceId = userName + "_Id"
+    }
+
+    function ShinodaHajime() {
+      userName = "Test_" + "ShinodaHajime";
+      deviceId = userName + "_Id"
+    }
+
+    function start_match() {
+      socketio.emit('message', {
+        type: `start_match`,
+        device_id: deviceId,
+        user_name: userName
       });
     }
 
-    function leave() {
-      socketio.emit('leave', {
-        roomId: 0,
-        deviceId: deviceId
+    function cancel_match() {
+      socketio.emit('message', {
+        type: `cancel_match`,
+        device_id: deviceId
       });
     }
 
-    function list() {
-      socketio.emit('list');
-    }
-
-    function send() {
-      socketio.emit('send', {
+    function shoot_ball() {
+      socketio.emit('message', {
+        type: `shoot_ball`,
         roomId: 0,
-        deviceId: deviceId,
+        device_id: deviceId,
         ballType: ballTypes[rand(5)],
         x: rand(50),
         y: rand(50),
       });
     }
 
-    function attack() {
-      socketio.emit('attack', {
-        roomId: 0,
-        deviceId: deviceId,
-        score: rand(100)
+    function move_bar() {
+      socketio.emit('message', {
+        type: `move_bar`,
+        room_id: 0,
+        device_id: deviceId,
+        ballType: ballTypes[rand(5)],
+        x: rand(50),
+        y: rand(50),
       });
     }
 
-    socketio.on('joined', function(data) {
-      console.log('=== joined ===');
+    function launch_special() {
+      socketio.emit('message', {
+        type: `launch_special`,
+        room_id: 0,
+        device_id: deviceId,
+        ballType: ballTypes[rand(5)],
+        x: rand(50),
+        y: rand(50),
+      });
+    }
+
+    function reflect_ball() {
+      socketio.emit('message', {
+        type: `reflect_ball`,
+        room_id: 0,
+        device_id: deviceId,
+        ballType: ballTypes[rand(5)],
+        x: rand(50),
+        y: rand(50),
+      });
+    }
+
+    function goal() {
+      socketio.emit('message', {
+        type: `goal`,
+        room_id: 0,
+        device_id: deviceId,
+        ballType: ballTypes[rand(5)],
+        x: rand(50),
+        y: rand(50),
+      });
+    }
+
+    socketio.on('message', function(data) {
       console.log(data);
-      console.log('==============');
     });
-
-    socketio.on('leaved', function(data) {
-      console.log('=== leaved ===');
-      console.log(data);
-      console.log('==============');
-    });
-
-    socketio.on('list', function(data) {
-      console.log('=== list ===');
-      console.log(data);
-      console.log('==============');
-    })
-
-    socketio.on('received', function(data) {
-      console.log('=== received ===');
-      console.log(data);
-      console.log('==============');
-    });
-
-    socketio.on('damaged', function(data) {
-      console.log('=== damaged ===');
-      console.log(data);
-      console.log('==============');
-    });
-
-    socketio.on('finished', function(data) {
-      console.log('=== finished ===');
-      console.log(data);
-      console.log('==============');
-    });
-
   </script>
 </body>
 
