@@ -13,7 +13,7 @@ module.exports = class Users {
     this.results = new Results(user_name, login_key);
   }
 
-  async list() {
+  list() {
     return new Promise((resolve) => {
       var options = { url: END_POINT + `debug` };
       request.get(options, function (error, response, body) {
