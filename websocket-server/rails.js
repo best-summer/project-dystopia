@@ -8,7 +8,7 @@ module.exports = class Rails {
     this.items = new Items();
   }
 
-  static async signup(props) {
+  static signup(props) {
     return new Promise((resolve) => {
       var options = {
         url: END_POINT + `signup`,
@@ -23,20 +23,23 @@ module.exports = class Rails {
       });
     });
   }
+  
 
   static async signin(props) {
-    return new Promise((resolve) => {
-      Rails.users().list(function (body) {
+    return new Promise(function(resolve) {
+      Rails.users().list().then(function(body) {
         var result_user = null;
         body = JSON.parse(body);
         body.forEach(function (user) {
           if (user.name === props.user_name)
             result_user = user;
         });
-        if (result_user)
-          resolve({ status: 'ok' }, result_user);
-        else
+        if (result_user) {
+          const user = Rails.users(result_user.user_name, result_user.login_key);
+          resolve({ status: 'ok', user: user });
+        } else {
           resolve({ status: 'ng', message: 'Not exist user.' });
+        }
       });
     });
   }
