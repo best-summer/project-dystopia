@@ -7,15 +7,17 @@ module.exports = class Status {
     this.login_key = login_key;
   }
 
-  get(callback) {
-    var options = {
-      url: END_POINT +
-           `users/` + this.user_name +
-           `/status?login_key=` + this.login_key,
-    };
-    console.log(this.login_key);
-    request.get(options, function (error, response, body) {
-      callback(body);
+  async get() {
+    return new Promise((resolve) => {
+      var options = {
+        url: END_POINT +
+        `users/` + this.user_name +
+        `/status?login_key=` + this.login_key,
+      };
+      request.get(options, function (error, response, body) {
+        resolve(body);
+        // callback(body);
+      });
     });
   }
 }

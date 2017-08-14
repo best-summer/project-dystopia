@@ -101,14 +101,14 @@ var start_match = function(socket, props) {
   rails.signin(options, function(body, user) {
     if (body.status === 'ok')
       _user = rails.users(user.name, user.login_key);
-    if (_user == null) {
-      rails.signup(options, function (body, user) {
-        if (body.status === 'ng')
-          emit(socket.id, { type: `start_match`, status: body.status, message: body.message });
-        else
-          _user = rails.users(user.name, user.login_key);
-      });
-    }
+    // if (_user == null) {
+    //   rails.signup(options, function (body, user) {
+    //     if (body.status === 'ng')
+    //       emit(socket.id, { type: `start_match`, status: body.status, message: body.message });
+    //     else
+    //       _user = rails.users(user.name, user.login_key);
+    //   });
+    // }
     if (_user == null) return;
     _user.status.get(function (body) {
       var room_id = _rooms.waiting();

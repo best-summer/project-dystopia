@@ -8,33 +8,36 @@ module.exports = class Rails {
     this.items = new Items();
   }
 
-  static signup(props, callback) {
-    var options = {
-      url: END_POINT + `signup`,
-      headers: { "Content-type": "application/json" },
-      json: {
-        name: props.user_name,
-        device_id: props.device_id
-      }
-    };
-    request.post(options, function (error, response, body) {
-      console.log(body);
-      callback(body, new Users(body.user_name, body.login_key));
+  static async signup(props) {
+    return new Promise((resolve) => {
+      var options = {
+        url: END_POINT + `signup`,
+        headers: { "Content-type": "application/json" },
+        json: {
+          name: props.user_name,
+          device_id: props.device_id
+        }
+      };
+      request.post(options, function (error, response, body) {
+        resolve(body, new Users(body.user_name, body.login_key));
+      });
     });
   }
 
-  static signin(props, callback) {
-    Rails.users().list(function(body) {
-      var result_user = null;
-      body = JSON.parse(body);
-      body.forEach(function(user) {
-        if (user.name === props.user_name)
-          result_user = user;
+  static async signin(props) {
+    return new Promise((resolve) => {
+      Rails.users().list(function (body) {
+        var result_user = null;
+        body = JSON.parse(body);
+        body.forEach(function (user) {
+          if (user.name === props.user_name)
+            result_user = user;
+        });
+        if (result_user)
+          resolve({ status: 'ok' }, result_user);
+        else
+          resolve({ status: 'ng', message: 'Not exist user.' });
       });
-      if (result_user)
-        callback({ status: 'ok' }, result_user);
-      else
-        callback({ status: 'ng', message: 'Not exist user.' });
     });
   }
 
