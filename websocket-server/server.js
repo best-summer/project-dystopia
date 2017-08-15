@@ -1,12 +1,12 @@
-var fs = require("fs");
-var http = require("http");
-var request = require("request");
-var io = require("socket.io");
-var aws = require('aws-sdk');
-var colors = require('colors');
-var _rooms = require('./rooms');
-var players = require('./players');
-var rails = require('./rails');
+const fs = require("fs");
+const http = require("http");
+const request = require("request");
+const io = require("socket.io");
+const aws = require('aws-sdk');
+const colors = require('colors');
+const _rooms = require('./rooms');
+const players = require('./players');
+const rails = require('./rails');
 
 // var _rooms = [];
 var _time = 0;
@@ -59,7 +59,7 @@ io.sockets.on("connection", function (socket) {
     var typeNames = Object.keys(types);
     if (!typeNames.includes(props.type)) {
       io.to(socket.id).emit(`message`, {
-        status: `error`,
+        status: `ng`,
         reason: `Incorrect type.`
       });
       return;
@@ -77,7 +77,7 @@ var get_rival_player = function(socket, props) {
   var room = _rooms[props.room_id];
   if (room == null) {
     var body = {
-      status: `error`,
+      status: `ng`,
       message: props.room_id + `is not exist.`
     };
     emit(socket, body);
@@ -142,7 +142,12 @@ var start_match = async function(socket, props) {
 var cancel_match = function(socket, props) {
   var player = players.get(props.device_id);
   if (player == null) {
-    emit(socket.id, { type: `cancel_match`, status: 'ng', message: `Not exists user.` });
+    const body = {
+      type: `cancel_match`,
+      status: 'ng',
+      message: `Not exists user.`
+    }
+    emit(socket.id, body);
     return;
   }
   players.remove(player.device_id);
@@ -151,7 +156,8 @@ var cancel_match = function(socket, props) {
 }
 
 var complete_match = function(room_id) {
-  _rooms.get(room_id).players.forEach(function(player) {
+  const room = _rooms.get(room_id);
+  room.players.forEach(function(player) {
     var rival = players.rivalOf(player.device_id);
     if (rival == null) {
       emit(player.socket_id, {
@@ -159,24 +165,36 @@ var complete_match = function(room_id) {
         status: `ng`,
         message: `players.length == 1`
       });
-    } else {
-      emit(player.socket_id, {
-        type: `complete_match`,
-        room_id: room_id,
-        enemy: rival
-      });
+      return;
     }
+    emit(player.socket_id, {
+      type: `complete_match`,
+      room_id: room_id,
+      enemy: rival
+    });
+    emit(player.socket_id, {
+      type: `game_start`,
+      room_id: room_id,
+    });
   });
 }
 
 var join_room = function(socket, props) {
   var room = _rooms[props.room_id];
   if (room == null) {
-    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+    let body = {
+      status: `ng`,
+      message: props.room_id + `is not exist.` 
+    };
+    emit(socket, body);
     return;
   }
   if (room.players.length >= 2) {
-    emit(socket, { status: `error`, reason: `players count is over 2.` });
+    let body = {
+      message: `ng`,
+      reason: `players count is over 2.`
+    };
+    emit(socket, body);
     return;
   }
   var newPlayer = {
@@ -191,7 +209,11 @@ var join_room = function(socket, props) {
 var leave_room = function(socket, props) {
   var room = _rooms[props.room_id];
   if (room == null) {
-    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+    let body = {
+      status: `error`,
+      reason: props.room_id + `is not exist.`
+    };
+    emit(socket, body);
     return;
   }
   room.players.forEach(function(player, index) {
@@ -202,53 +224,11 @@ var leave_room = function(socket, props) {
   emit(socket, { type: props.type, status: `ok` });
 }
 
-var game_start = function(socket, props) {
-  // rails.signup({ name: 'Yun12', device_id: '000012' }, function(user) {
-
-  // });
-  // rails.signup({ name: `Yun11`, device_id: '000011' }, function(user) {
-    // user.list(function (body) {
-    //   console.log(body);
-    // });
-    rails.users().list(function(body) {
-      console.log(body);
-    });
-    var user = rails.users(`Yun11`, `9UX2cBqhPZg=`);
-    // console.log(user);
-    user.status.get(function(body) {
-      // console.log(body);
-    });
-    user.items.get(function(body) {
-      console.log(body);
-    });
-    // user.items.set({
-    //   name: `TestBall`,
-    //   login_key: this.login_key,
-    //   value: '100',
-    //   number: '1'
-    // }, function (body) {
-    //   console.log(body);
-    // });
-    user.items.get(function(body) {
-      console.log(body);
-    });
-    // user.results(null, function (body) {
-      // console.log(body);
-    // });
-    // user.results({ "score": "200", "vs": "win", "login_key": user.login_key }, function (body) {
-      // console.log(body);
-    // });
-    user.results.get(function(body) {
-      console.log(body);
-    });
-  // });
-}
-
 // game_start();
 var game_finish = function(socket, props) {
   var player = players.get(props.device_id);
   var room = _rooms.get(player.room_id);
-  _rooms.get(room.room_id).players.forEach(function(player) {
+  room.players.forEach(function(player) {
     var rival = players.rivalOf(player.device_id);
     var body = {
       type: `game_finish`,
@@ -266,12 +246,39 @@ var splash_water = function(socket, props) {
 }
 
 var hit_water = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
+  const player = players.get(props.device_id);
+  const room = _rooms.get(player.room_id);
+  room.players.forEach(function(p) {
+    const rival = players.rivalOf(p.device_id);
+    if (player.device_id == p.device_id)
+      rival.score += props.score;
+    else
+      rival.score -= props.score;
+  });
+  room.players.forEach(function(p) {
+    const rival = players.rivalOf(p.device_id);
+    const body = {
+      device_id: p.device_id,
+      room_id: p.room_id,
+      scores: [
+        {
+          device_id: p.device_id,
+          user_name: p.user_name,
+          score: p.score
+        },
+        {
+          device_id: rival.device_id,
+          user_name: rival.user_name,
+          score: rival.score
+        }
+      ]
+    };
+    emit(p.socket_id, body);
+  });
 }
 
 var move = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
+  const rival = players.rivalOf(props.device_id);
   emit(rival.socket_id, props);
 }
 

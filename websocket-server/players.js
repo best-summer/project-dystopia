@@ -10,7 +10,8 @@ class Players {
       device_id: props.device_id,
       socket_id: props.socket_id,
       summer_vacation_days: props.summer_vacation_days,
-      rank: props.rank
+      rank: props.rank,
+      score: 0;
     }
     this.self.push(user);
   }
