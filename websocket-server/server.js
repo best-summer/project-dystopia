@@ -177,6 +177,14 @@ var complete_match = function(room_id) {
 
 var game_finish = async function(socket, props) {
   const player = players.get(props.device_id);
+  if (player == null || player.finished) {
+    emit(socket.id, {
+      type: `game_finish`,
+      status: `ng`,
+      message: `You are not logged in.`
+    });
+    return;
+  }
   const rival = players.rivalOf(player.device_id);
   const room = _rooms.get(player.room_id);
   const win = Number(player.score) > Number(rival.score);
@@ -198,7 +206,7 @@ var game_finish = async function(socket, props) {
     players.remove(player.device_id);
     players.remove(rival.device_id);
     _rooms.leave(player.room_id, socket, { device_id: player.device_id });
-    _rooms.leave(rival.room_id, socket, { socket_id: rival.socket_id });
+    _rooms.leave(rival.room_id, socket, { device_id: rival.device_id });
   }
 
   // Send the result to Rails.
