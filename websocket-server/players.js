@@ -33,6 +33,15 @@ class Players {
     return result;
   }
 
+  getBySocketId(socket_id) {
+    var result = null;
+    this.self.forEach(function(player) {
+      if (player.socket_id === socket_id)
+        result = player;
+    }.bind(this));
+    return result;
+  }
+
   rivalOf(device_id) {
     var result = null;
     var room_id = null;
