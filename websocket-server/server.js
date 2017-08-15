@@ -226,23 +226,25 @@ var leave_room = function(socket, props) {
 
 // game_start();
 var game_finish = function(socket, props) {
-  var player = players.get(props.device_id);
-  var room = _rooms.get(player.room_id);
-  room.players.forEach(function(player) {
-    var rival = players.rivalOf(player.device_id);
-    var body = {
-      type: `game_finish`,
-      room_id: room_id,
-      enemy: rival
-    }
-    emit(rival.socket_id, body);
-  });
+  const player = players.get(props.device_id);
+  const room = _rooms.get(player.room_id);
+  const rival = players.rivalOf(player.device_id);
+  const win = Number(player.score) > Number(rival.score);
+  const body = {
+    type: `game_finish`,
+    device_id: props.device_id,
+    room_id: props.room_id,
+    win: win,
+    enemy: rival
+  };
+  emit(player.socket_id, body);
   // Rails.
 }
 
 var splash_water = function(socket, props) {
   var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
+  if (rival != null)
+    emit(rival.socket_id, props);
 }
 
 var hit_water = function(socket, props) {
@@ -279,7 +281,8 @@ var hit_water = function(socket, props) {
 
 var move = function(socket, props) {
   const rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
+  if (rival != null)
+    emit(rival.socket_id, props);
 }
 
 var send_result = function() {
