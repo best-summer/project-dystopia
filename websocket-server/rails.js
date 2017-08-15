@@ -19,7 +19,10 @@ module.exports = class Rails {
         }
       };
       request.post(options, function (error, response, body) {
-        resolve(body, new Users(props.device_id, body.login_key));
+        if (body.status == 'ng')
+          resolve(null);
+        else
+          resolve(new Users(props.device_id, body.login_key));
       });
     });
   }
@@ -35,7 +38,7 @@ module.exports = class Rails {
             result_user = user;
         });
         if (result_user) {
-          const user = Rails.users(result_user.device_id, result_user.login_key);
+          const user = new Users(result_user.device_id, result_user.login_key);
           resolve({ status: 'ok', user: user });
         } else {
           resolve({ status: 'ng', message: 'Not exist user.' });
