@@ -76,20 +76,20 @@ var emit = function(socket_id, props) {
 var get_rival_player = function(socket, props) {
   var room = _rooms[props.room_id];
   if (room == null) {
-    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+    var body = {
+      status: `error`,
+      message: props.room_id + `is not exist.`
+    };
+    emit(socket, body);
     return;
   }
-  var rival_player;
+  var rival = null;
   room.players.forEach(function(player) {
     if (player.device_id != props.device_id) {
-      rival_player = player;
+      rival = player;
     }
   });
-  return rival_player;
-}
-
-var get_rooms = function(socket, props) {
-  emit(socket, { type: props.type, rooms: _rooms });
+  return rival;
 }
 
 var start_match = async function(socket, props) {
@@ -246,39 +246,31 @@ var game_start = function(socket, props) {
 
 // game_start();
 var game_finish = function(socket, props) {
+  var player = players.get(props.device_id);
+  var room = _rooms.get(player.room_id);
+  _rooms.get(room.room_id).players.forEach(function(player) {
+    var rival = players.rivalOf(player.device_id);
+    var body = {
+      type: `game_finish`,
+      room_id: room_id,
+      enemy: rival
+    }
+    emit(rival.socket_id, body);
+  });
   // Rails.
 }
 
-var game_time = function(socket, props) {
-  emit(socket, { type: props.type, time_second: _time });
-}
-
-var game_score = function(socket, props) {
-  emit(socket, { type: props.type, scores: _scores });
-}
-
-var shoot_ball = function(socket, props) {
+var splash_water = function(socket, props) {
   var rival = players.rivalOf(props.device_id);
   emit(rival.socket_id, props);
 }
 
-var move_bar = function(socket, props) {
+var hit_water = function(socket, props) {
   var rival = players.rivalOf(props.device_id);
   emit(rival.socket_id, props);
 }
 
-var launch_special = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
-
-}
-
-var reflect_ball = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
-}
-  
-var goal = function(socket, props) {
+var move = function(socket, props) {
   var rival = players.rivalOf(props.device_id);
   emit(rival.socket_id, props);
 }
