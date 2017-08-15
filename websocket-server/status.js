@@ -2,8 +2,8 @@ var request = require("request");
 var END_POINT = `https://best-summer-api.herokuapp.com/`
 
 module.exports = class Status {
-  constructor(user_name, login_key) {
-    this.user_name = user_name;
+  constructor(device_id, login_key) {
+    this.device_id = device_id;
     this.login_key = login_key;
   }
 
@@ -11,7 +11,7 @@ module.exports = class Status {
     return new Promise((resolve) => {
       var options = {
         url: END_POINT +
-        `users/` + this.user_name +
+        `users/` + this.device_id +
         `/status?login_key=` + this.login_key,
       };
       request.get(options, function (error, response, body) {

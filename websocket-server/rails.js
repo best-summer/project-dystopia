@@ -19,7 +19,7 @@ module.exports = class Rails {
         }
       };
       request.post(options, function (error, response, body) {
-        resolve(body, new Users(body.user_name, body.login_key));
+        resolve(body, new Users(props.device_id, body.login_key));
       });
     });
   }
@@ -35,7 +35,7 @@ module.exports = class Rails {
             result_user = user;
         });
         if (result_user) {
-          const user = Rails.users(result_user.name, result_user.login_key);
+          const user = Rails.users(result_user.device_id, result_user.login_key);
           resolve({ status: 'ok', user: user });
         } else {
           resolve({ status: 'ng', message: 'Not exist user.' });
@@ -50,10 +50,9 @@ module.exports = class Rails {
   // Rails.users(`Nenecchi`).items.add({ name: `SuperBall` });
   // Rails.users(`Nenecchi`).results.get();
   // Rails.users(`Nenecchi`).results.set({ score: 200, vs: `win` });
-  static users(user_name, login_key) {
-    console.log(Users);
-    if (user_name && login_key)
-      return new Users(user_name, login_key);
+  static users(device_id, login_key) {
+    if (device_id && login_key)
+      return new Users(device_id, login_key);
     else
       return new Users();
   }

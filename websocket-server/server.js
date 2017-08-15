@@ -83,7 +83,7 @@ var start_match = async function(socket, props) {
         message: body.message
       });
     } else {
-      user = rails.users(body.name, body.login_key);
+      user = rails.users(props.device_id, body.login_key);
     }
   } else{
     user = body.user;
@@ -120,7 +120,7 @@ var start_match = async function(socket, props) {
   status = JSON.parse(status);
   var player = {
     user_name: props.user_name,
-    login_key: login_key,
+    login_key: user.login_key,
     room_id: room_id,
     device_id: props.device_id,
     socket_id: socket.id,
@@ -197,12 +197,12 @@ var game_finish = async function(socket, props) {
   if (player.finished == true && rival.finished == true) {
     players.remove(player.device_id);
     players.remove(rival.device_id);
-    _rooms.leave(player.room_id, socket, { device_id: device_id });
-    _rooms.leave(rival.room_id, socket, { socket_id: socket_id });
+    _rooms.leave(player.room_id, socket, { device_id: player.device_id });
+    _rooms.leave(rival.room_id, socket, { socket_id: rival.socket_id });
   }
 
   // Send the result to Rails.
-  const user = rails.users(player.user_name, player.login_key);
+  const user = rails.users(player.device_id, player.login_key);
   const result = {
     login_key: player.login_key,
     score: player.score,
@@ -300,8 +300,4 @@ var move = function(socket, props) {
     return;
   }
   emit(rival.socket_id, props);
-}
-
-var send_result = function(_device_id) {
-  
 }

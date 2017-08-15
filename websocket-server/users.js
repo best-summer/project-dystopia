@@ -5,12 +5,12 @@ var Results = require('./results');
 var END_POINT = `https://best-summer-api.herokuapp.com/`
 
 module.exports = class Users {
-  constructor(user_name, login_key) {
-    this.user_name = user_name;
+  constructor(device_id, login_key) {
+    this.device_id = device_id;
     this.login_key = login_key;
-    this.status = new Status(user_name, login_key);
-    this.items = new Items(user_name, login_key);
-    this.results = new Results(user_name, login_key);
+    this.status = new Status(device_id, login_key);
+    this.items = new Items(device_id, login_key);
+    this.results = new Results(device_id, login_key);
   }
 
   list() {
