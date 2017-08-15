@@ -35,7 +35,7 @@ module.exports = class Rails {
             result_user = user;
         });
         if (result_user) {
-          const user = Rails.users(result_user.user_name, result_user.login_key);
+          const user = Rails.users(result_user.name, result_user.login_key);
           resolve({ status: 'ok', user: user });
         } else {
           resolve({ status: 'ng', message: 'Not exist user.' });
