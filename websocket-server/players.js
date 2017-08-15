@@ -6,12 +6,13 @@ class Players {
   add(props) {
     var user = {
       user_name: props.user_name,
+      login_key: props.login_key,
       room_id: props.room_id,
       device_id: props.device_id,
       socket_id: props.socket_id,
       summer_vacation_days: props.summer_vacation_days,
       rank: props.rank,
-      score: 0;
+      score: 0
     }
     this.self.push(user);
   }
