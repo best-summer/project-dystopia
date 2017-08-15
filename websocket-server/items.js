@@ -7,41 +7,47 @@ module.exports = class Items {
     this.login_key = login_key;
   }
 
-  get(callback) {
-    var options = {
-      url: END_POINT +
-           `users/` + this.user_name +
-           `/items?login_key=` + this.login_key,
-    };
-    request.get(options, function (error, response, body) {
-      callback(body);
+  async get() {
+    return new Promise((resolve) => {
+      var options = {
+        url: END_POINT +
+        `users/` + this.user_name +
+        `/items?login_key=` + this.login_key,
+      };
+      request.get(options, function (error, response, body) {
+        resolve(body);
+      });
     });
   }
 
-  add(new_props, callback) {
-    var options = {
-      url: END_POINT + 
-           `users/` + this.user_name +
-           `/items?login_key=` + this.login_key,
-      json: {
-        name: new_props.name,
-        login_key: new_props.login_key,
-        value: new_props.value,
-        number: new_props.number
-      }
-    };
-    request.post(options, function (error, response, body) {
-      callback(body);
+  async add(new_props) {
+    return new Promise((resolve) => {
+      var options = {
+        url: END_POINT +
+        `users/` + this.user_name +
+        `/items?login_key=` + this.login_key,
+        json: {
+          name: new_props.name,
+          login_key: new_props.login_key,
+          value: new_props.value,
+          number: new_props.number
+        }
+      };
+      request.post(options, function (error, response, body) {
+        resolve(body);
+      });
     });
   }
 
-  list(callback) {
-    var options = {
-      url: END_POINT + `/items`,
-      json: new_props
-    };
-    request.get(options, function (error, response, body) {
-      callback(body);
+  async list() {
+    return new Promise((resolve) => {
+      var options = {
+        url: END_POINT + `/items`,
+        json: new_props
+      };
+      request.get(options, function (error, response, body) {
+        resolve(body);
+      });
     });
   }
 }

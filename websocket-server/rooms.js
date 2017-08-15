@@ -15,11 +15,7 @@ class Rooms {
     var room_id = uuid.v1();
     var room = {
       room_id: room_id,
-      players: [{
-        socket_id: socket.id,
-        device_id: props.device_id,
-        user_name: props.user_name
-      }]
+      players: []
     };
     this.self[room_id] = room;
     return room_id;
