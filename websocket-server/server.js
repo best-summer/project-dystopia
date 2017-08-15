@@ -1,3 +1,4 @@
+// WebSocket-Server v0.1.1
 const fs = require("fs");
 var http = require("http");
 const request = require("request");
@@ -96,6 +97,7 @@ var start_match = async function(socket, props) {
   if (players.get(props.device_id)) {
     const body = {
       type: `start_match`,
+      status: `ng`,
       message: `You are already logged in.`
     };
     emit(socket.id, body);
@@ -110,7 +112,7 @@ var start_match = async function(socket, props) {
     if (p.device_id == props.device_id) {
       const body = {
         type: `start_match`,
-        room_id: room_id,
+        status: `ng`,
         message: `You are already logged in.`
       };
       emit(socket.id, body);
