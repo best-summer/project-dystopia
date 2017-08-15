@@ -75,15 +75,16 @@ var start_match = async function(socket, props) {
   // Signin/Signout.
   let body = await rails.signin(options);
   if (body.status === 'ng') {
-    let body = await rails.signup(options);
-    if (body.status === 'ng') {
+    let result_user = await rails.signup(options);
+    if (result_user == null) {
       emit(socket.id, {
         type: `start_match`,
-        status: body.status,
-        message: body.message
+        status: 'ng',
+        message: 'Signup error.'
       });
+      return;
     } else {
-      user = rails.users(props.device_id, body.login_key);
+      user = result_user;
     }
   } else{
     user = body.user;
@@ -125,11 +126,15 @@ var start_match = async function(socket, props) {
     device_id: props.device_id,
     socket_id: socket.id,
     summer_vacation_days: body.summer_vacation_days,
-    rank: body.rank,
+    rank: status.rank,
     score: 0
   }
   players.add(player);
-  emit(socket.id, { type: `start_match`, room_id: room_id });
+  emit(socket.id, {
+    type: `start_match`,
+    device_id: props.device_id,
+    user_name: props.user_name
+  });
   if (_rooms.get(room_id).players.length === 2) {
     complete_match(room_id);
   }
