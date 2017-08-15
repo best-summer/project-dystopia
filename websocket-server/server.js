@@ -1,12 +1,12 @@
-var fs = require("fs");
+const fs = require("fs");
 var http = require("http");
-var request = require("request");
+const request = require("request");
 var io = require("socket.io");
-var aws = require('aws-sdk');
-var colors = require('colors');
-var _rooms = require('./rooms');
-var players = require('./players')
-var rails = require('./rails');
+const aws = require('aws-sdk');
+const colors = require('colors');
+const _rooms = require('./rooms');
+const players = require('./players');
+const rails = require('./rails');
 
 // var _rooms = [];
 var _time = 0;
@@ -26,40 +26,24 @@ io = io.listen(http);
 
 io.sockets.on("connection", function (socket) {
 
-  log('Connected', { socketId: socket.id });
-
-  socket.on('message', function(props) {
-
     // props = JSON.parse(props);
 
-    var types = {
+  var types = {
+    start_match: start_match,
+    cancel_match: cancel_match,
+    game_finish: game_finish,
+    splash_water: splash_water,
+    hit_water: hit_water,
+    move: move
+  };
 
-      // Matching.
-      start_match: start_match,
-      cancel_match: cancel_match,
-      // complete_match: complete_match,
-      // failed_match: failed_match
-
-      // Progress.
-      // game_start: game_start,
-      // game_finish: game_finish,
-
-      // Play.
-      // game_time: game_time,
-      // game_score: game_score,
-      shoot_ball: shoot_ball,
-      move_bar: move_bar,
-      launch_special: launch_special,
-      reflect_ball: reflect_ball,
-      goal: goal,
-
-    };
+  socket.on('message', function(props) {
 
     // Check whether props.type is correct type.
     var typeNames = Object.keys(types);
     if (!typeNames.includes(props.type)) {
       io.to(socket.id).emit(`message`, {
-        status: `error`,
+        status: `ng`,
         reason: `Incorrect type.`
       });
       return;
@@ -67,77 +51,99 @@ io.sockets.on("connection", function (socket) {
 
     types[props.type](socket, props);
   });
+
+  socket.on('disconnect', function(props) {
+    const player = players.getBySocketId(socket.id);
+    if (player) {
+      players.remove(player.device_id);
+      _rooms.leave(player.room_id, socket, { device_id: player.device_id });
+    }
+  });
 });
 
 var emit = function(socket_id, props) {
   io.to(socket_id).emit(`message`, props);
 }
 
-var get_rival_player = function(socket, props) {
-  var room = _rooms[props.room_id];
-  if (room == null) {
-    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
-    return;
-  }
-  var rival_player;
-  room.players.forEach(function(player) {
-    if (player.device_id != props.device_id) {
-      rival_player = player;
-    }
-  });
-  return rival_player;
-}
-
-var get_rooms = function(socket, props) {
-  emit(socket, { type: props.type, rooms: _rooms });
-}
-
-var start_match = function(socket, props) {
-  var _user = null;
+var start_match = async function(socket, props) {
+  var user = null;
   var options = {
     user_name: props.user_name,
     device_id: props.device_id
   };
-  rails.signin(options, function(body, user) {
-    if (body.status === 'ok')
-      _user = rails.users(user.name, user.login_key);
-    if (_user == null) {
-      rails.signup(options, function (body, user) {
-        if (body.status === 'ng')
-          emit(socket.id, { type: `start_match`, status: body.status, message: body.message });
-        else
-          _user = rails.users(user.name, user.login_key);
+
+  // Signin/Signout.
+  let body = await rails.signin(options);
+  if (body.status === 'ng') {
+    let body = await rails.signup(options);
+    if (body.status === 'ng') {
+      emit(socket.id, {
+        type: `start_match`,
+        status: body.status,
+        message: body.message
       });
+    } else {
+      user = rails.users(props.device_id, body.login_key);
     }
-    if (_user == null) return;
-    _user.status.get(function (body) {
-      var room_id = _rooms.waiting();
-      if (room_id == null)
-        room_id = _rooms.add(socket, props);
-      else
-        _rooms.join(room_id, socket, props);
-      body = JSON.parse(body);
-      var player = {
-        user_name: props.user_name,
+  } else{
+    user = body.user;
+  }
+
+  if (user == null)
+    return;
+
+  if (players.get(props.device_id)) {
+    const body = {
+      type: `start_match`,
+      message: `You are already logged in.`
+    };
+    emit(socket.id, body);
+    return;
+  }
+
+  // Join to Room.
+  let status = await user.status.get();
+  const room_id = _rooms.waiting() || _rooms.add(socket, props);
+  const room = _rooms.get(room_id);
+  for (const p of room.players) {
+    if (p.device_id == props.device_id) {
+      const body = {
+        type: `start_match`,
         room_id: room_id,
-        device_id: props.device_id,
-        socket_id: socket.id,
-        summer_vacation_days: body.summer_vacation_days,
-        rank: body.rank
-      }
-      players.add(player);
-      emit(socket.id, { type: `start_match`, room_id: room_id });
-      if (_rooms.get(room_id).players.length === 2) {
-        complete_match(room_id);
-      }
-    });
-  });
+        message: `You are already logged in.`
+      };
+      emit(socket.id, body);
+      return;
+    }
+  }
+  _rooms.join(room_id, socket, props);
+  status = JSON.parse(status);
+  var player = {
+    user_name: props.user_name,
+    login_key: user.login_key,
+    room_id: room_id,
+    device_id: props.device_id,
+    socket_id: socket.id,
+    summer_vacation_days: body.summer_vacation_days,
+    rank: body.rank,
+    score: 0
+  }
+  players.add(player);
+  emit(socket.id, { type: `start_match`, room_id: room_id });
+  if (_rooms.get(room_id).players.length === 2) {
+    complete_match(room_id);
+  }
 }
 
 var cancel_match = function(socket, props) {
   var player = players.get(props.device_id);
   if (player == null) {
-    emit(socket.id, { type: `cancel_match`, status: 'ng', message: `Not exists user.` });
+    const body = {
+      type: `cancel_match`,
+      status: 'ng',
+      message: `Not exists user.`
+    }
+    emit(socket.id, body);
     return;
   }
   players.remove(player.device_id);
@@ -146,137 +152,160 @@ var cancel_match = function(socket, props) {
 }
 
 var complete_match = function(room_id) {
-  _rooms.get(room_id).players.forEach(function(player) {
+  const room = _rooms.get(room_id);
+  room.players.forEach(function(player) {
     var rival = players.rivalOf(player.device_id);
-    emit(rival.socket_id, {
+    if (rival == null) {
+      emit(player.socket_id, {
+        type: `complete_match`,
+        status: `ng`,
+        message: `players.length == 1`
+      });
+      return;
+    }
+    emit(player.socket_id, {
       type: `complete_match`,
       room_id: room_id,
       enemy: rival
     });
+    emit(player.socket_id, {
+      type: `game_start`,
+      room_id: room_id,
+    });
   });
 }
 
-var join_room = function(socket, props) {
-  var room = _rooms[props.room_id];
-  if (room == null) {
-    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+var game_finish = async function(socket, props) {
+  const player = players.get(props.device_id);
+  if (player == null || player.finished) {
+    emit(socket.id, {
+      type: `game_finish`,
+      status: `ng`,
+      message: `You are not logged in.`
+    });
     return;
   }
-  if (room.players.length >= 2) {
-    emit(socket, { status: `error`, reason: `players count is over 2.` });
-    return;
-  }
-  var newPlayer = {
+  const rival = players.rivalOf(player.device_id);
+  const room = _rooms.get(player.room_id);
+  const win = Number(player.score) > Number(rival.score);
+  const body = {
+    type: `game_finish`,
     device_id: props.device_id,
-    user_name: props.user_name,
-    socket_id: socket.id
+    room_id: props.room_id,
+    win: win,
+    you: player,
+    enemy: rival
   };
-  room.players.push(newPlayer);
-  emit(socket, { type: props.type, status: `ok` });
+  emit(player.socket_id, body);
+  
+  // Set player as finished.
+  player.finished = true;
+  
+  // Leave from the room.
+  if (player.finished == true && rival.finished == true) {
+    players.remove(player.device_id);
+    players.remove(rival.device_id);
+    _rooms.leave(player.room_id, socket, { device_id: player.device_id });
+    _rooms.leave(rival.room_id, socket, { device_id: rival.device_id });
+  }
+
+  // Send the result to Rails.
+  const user = rails.users(player.device_id, player.login_key);
+  const result = {
+    login_key: player.login_key,
+    score: player.score,
+    vs: win ? `win` : `lose`
+  };
+  const response = await user.results.set(result);
+  console.log(response);
 }
 
-var leave_room = function(socket, props) {
-  var room = _rooms[props.room_id];
-  if (room == null) {
-    emit(socket, { status: `error`, reason: props.room_id + `is not exist.` });
+var splash_water = function(socket, props) {
+  const player = players.get(props.device_id);
+  if (player == null) {
+    emit(socket.id, {
+      type: `splash_water`,
+      status: `ng`,
+      message: `You are not logged in.`
+    });
     return;
   }
-  room.players.forEach(function(player, index) {
-    if (player.device_id == props.device_id) {
-      room.players.splice(index, 1);
+  const rival = players.rivalOf(props.device_id);
+  if (rival == null) {
+    emit(socket.id, {
+      type: `splash_water`,
+      status: `ng`,
+      message: `rival is not logged in.`
+    });
+    return;
+  }
+  emit(rival.socket_id, props);
+}
+
+var hit_water = function(socket, props) {
+  const player = players.get(props.device_id);
+  if (player == null) {
+    emit(socket.id, {
+      type: `hit_water`,
+      status: `ng`,
+      message: `You are not logged in.`
+    });
+    return;
+  }
+  const room = _rooms.get(player.room_id);
+  room.players.forEach(function(p) {
+    const rival = players.rivalOf(p.device_id);
+    if (player.device_id == p.device_id)
+      player.score += props.score;
+  });
+  room.players.forEach(function(p) {
+    const player = players.get(p.device_id);
+    const rival = players.rivalOf(p.device_id);
+    if (rival == null) {
+      emit(socket.id, {
+        type: `hit_water`,
+        status: `ng`,
+        message: `rival is not logged in.`
+      });
+      return;
     }
+    const body = {
+      type: `hit_water`,
+      device_id: player.device_id,
+      room_id: player.room_id,
+      you: {
+          device_id: player.device_id,
+          user_name: player.user_name,
+          score: player.score
+      },
+      enemy: {
+        device_id: rival.device_id,
+        user_name: rival.user_name,
+        score: rival.score
+      }
+    };
+    emit(p.socket_id, body);
   });
-  emit(socket, { type: props.type, status: `ok` });
 }
 
-var game_start = function(socket, props) {
-  // rails.signup({ name: 'Yun12', device_id: '000012' }, function(user) {
-
-  // });
-  // rails.signup({ name: `Yun11`, device_id: '000011' }, function(user) {
-    // user.list(function (body) {
-    //   console.log(body);
-    // });
-    rails.users().list(function(body) {
-      console.log(body);
+var move = function(socket, props) {
+  const player = players.get(props.device_id);
+  if (player == null) {
+    emit(socket.id, {
+      type: `move`,
+      status: `ng`,
+      message: `You are not logged in.`
     });
-    var user = rails.users(`Yun11`, `9UX2cBqhPZg=`);
-    // console.log(user);
-    user.status.get(function(body) {
-      // console.log(body);
+    return;
+  }
+  const rival = players.rivalOf(props.device_id);
+  if (rival == null) {
+    emit(socket.id, {
+      type: `move`,
+      status: `ng`,
+      message: `rival is not logged in.`
     });
-    user.items.get(function(body) {
-      console.log(body);
-    });
-    // user.items.set({
-    //   name: `TestBall`,
-    //   login_key: this.login_key,
-    //   value: '100',
-    //   number: '1'
-    // }, function (body) {
-    //   console.log(body);
-    // });
-    user.items.get(function(body) {
-      console.log(body);
-    });
-    // user.results(null, function (body) {
-      // console.log(body);
-    // });
-    // user.results({ "score": "200", "vs": "win", "login_key": user.login_key }, function (body) {
-      // console.log(body);
-    // });
-    user.results.get(function(body) {
-      console.log(body);
-    });
-  // });
-}
-
-// game_start();
-var game_finish = function(socket, props) {
-  // Rails.
-}
-
-var game_time = function(socket, props) {
-  emit(socket, { type: props.type, time_second: _time });
-}
-
-var game_score = function(socket, props) {
-  emit(socket, { type: props.type, scores: _scores });
-}
-
-var shoot_ball = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
+    return;
+  }
   emit(rival.socket_id, props);
-}
-
-var move_bar = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
-}
-
-var launch_special = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
-
-}
-
-var reflect_ball = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
-}
-  
-var goal = function(socket, props) {
-  var rival = players.rivalOf(props.device_id);
-  emit(rival.socket_id, props);
-}
-
-var send_result = function() {
-  // Rails.
-}
-
-function log(eventName, objects) {
-  console.log(colors.bgCyan.black(`LOG`) + ' ' + colors.green(eventName));
-  Object.keys(objects).forEach(function(key) {
-    console.log(colors.gray(key + ':'), objects[key]);
-  });
 }

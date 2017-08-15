@@ -8,33 +8,39 @@ module.exports = class Rails {
     this.items = new Items();
   }
 
-  static signup(props, callback) {
-    var options = {
-      url: END_POINT + `signup`,
-      headers: { "Content-type": "application/json" },
-      json: {
-        name: props.user_name,
-        device_id: props.device_id
-      }
-    };
-    request.post(options, function (error, response, body) {
-      console.log(body);
-      callback(body, new Users(body.user_name, body.login_key));
+  static signup(props) {
+    return new Promise((resolve) => {
+      var options = {
+        url: END_POINT + `signup`,
+        headers: { "Content-type": "application/json" },
+        json: {
+          name: props.user_name,
+          device_id: props.device_id
+        }
+      };
+      request.post(options, function (error, response, body) {
+        resolve(body, new Users(props.device_id, body.login_key));
+      });
     });
   }
+  
 
-  static signin(props, callback) {
-    Rails.users().list(function(body) {
-      var result_user = null;
-      body = JSON.parse(body);
-      body.forEach(function(user) {
-        if (user.name === props.user_name)
-          result_user = user;
+  static async signin(props) {
+    return new Promise(function(resolve) {
+      Rails.users().list().then(function(body) {
+        var result_user = null;
+        body = JSON.parse(body);
+        body.forEach(function (user) {
+          if (user.name === props.user_name)
+            result_user = user;
+        });
+        if (result_user) {
+          const user = Rails.users(result_user.device_id, result_user.login_key);
+          resolve({ status: 'ok', user: user });
+        } else {
+          resolve({ status: 'ng', message: 'Not exist user.' });
+        }
       });
-      if (result_user)
-        callback({ status: 'ok' }, result_user);
-      else
-        callback({ status: 'ng', message: 'Not exist user.' });
     });
   }
 
@@ -44,10 +50,9 @@ module.exports = class Rails {
   // Rails.users(`Nenecchi`).items.add({ name: `SuperBall` });
   // Rails.users(`Nenecchi`).results.get();
   // Rails.users(`Nenecchi`).results.set({ score: 200, vs: `win` });
-  static users(user_name, login_key) {
-    console.log(Users);
-    if (user_name && login_key)
-      return new Users(user_name, login_key);
+  static users(device_id, login_key) {
+    if (device_id && login_key)
+      return new Users(device_id, login_key);
     else
       return new Users();
   }
