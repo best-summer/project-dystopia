@@ -18,11 +18,10 @@
   <!-- <button onclick="game_finish();" id="join">game_finish</button> -->
   <!-- <button onclick="game_time();" id="join">game_time</button> -->
   <!-- <button onclick="game_score();" id="join">game_score</button> -->
-  <button onclick="shoot_ball();" id="join">shoot_ball</button>
-  <button onclick="move_bar();" id="join">move_bar</button>
-  <button onclick="launch_special();" id="join">launch_special</button>
-  <button onclick="reflect_ball();" id="join">reflect_ball</button>
-  <button onclick="goal();" id="join">goal</button>
+  <button onclick="splash_water();" id="join">splash_water</button>
+  <button onclick="hit_water();" id="join">hit_water</button>
+  <button onclick="move();" id="join">move</button>
+  <button onclick="game_finish();" id="join">game_finish</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js"></script>
   <script type="text/javascript">
@@ -54,7 +53,7 @@
     }
 
     function ShinodaHajime() {
-      userName = "Test_" + "ShinodaHajime";
+      userName = "Test_" + rand(10000);
       deviceId = userName + "_Id"
     }
 
@@ -73,58 +72,42 @@
       });
     }
 
-    function shoot_ball() {
+    function game_finish() {
       socketio.emit('message', {
-        type: `shoot_ball`,
-        roomId: 0,
-        device_id: deviceId,
-        ballType: ballTypes[rand(5)],
-        x: rand(50),
-        y: rand(50),
+        type: `game_finish`,
+        device_id: deviceId
       });
     }
 
-    function move_bar() {
+    function splash_water() {
       socketio.emit('message', {
-        type: `move_bar`,
+        type: `splash_water`,
         room_id: 0,
         device_id: deviceId,
-        ballType: ballTypes[rand(5)],
-        x: rand(50),
-        y: rand(50),
       });
     }
 
-    function launch_special() {
+    function hit_water() {
       socketio.emit('message', {
-        type: `launch_special`,
+        type: `hit_water`,
         room_id: 0,
         device_id: deviceId,
-        ballType: ballTypes[rand(5)],
-        x: rand(50),
-        y: rand(50),
+        score: 50
       });
     }
 
-    function reflect_ball() {
+    function move() {
       socketio.emit('message', {
-        type: `reflect_ball`,
+        type: `move`,
         room_id: 0,
         device_id: deviceId,
-        ballType: ballTypes[rand(5)],
-        x: rand(50),
-        y: rand(50),
-      });
-    }
-
-    function goal() {
-      socketio.emit('message', {
-        type: `goal`,
-        room_id: 0,
-        device_id: deviceId,
-        ballType: ballTypes[rand(5)],
-        x: rand(50),
-        y: rand(50),
+        position: {
+          x: rand(50),
+          y: rand(50)
+        },
+        angle: {
+          r: rand(50)
+        }
       });
     }
 
