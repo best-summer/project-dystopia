@@ -10,29 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170729181043) do
+ActiveRecord::Schema.define(version: 20170813074706) do
 
   create_table "items", force: :cascade do |t|
-    t.string   "name"
+    t.string   "device_id"
     t.integer  "value"
     t.integer  "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.string   "name"
+    t.string   "rarity",     default: "None"
     t.index ["user_id"], name: "index_items_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string   "device_id"
-    t.string   "name"
-    t.integer  "score"
-    t.integer  "billing"
-    t.integer  "rank"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.integer  "score",      default: 0
+    t.integer  "billing",    default: 0
+    t.string   "rank",       default: "C"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.string   "login_key"
-    t.integer  "win_count"
-    t.integer  "lose_count"
-    t.integer  "summer_vacation_days"
+    t.integer  "win_count",  default: 0
+    t.integer  "lose_count", default: 0
+    t.string   "equipment1", default: "None"
+    t.string   "equipment2", default: "None"
+    t.string   "name"
+    t.index ["device_id"], name: "index_users_on_device_id", unique: true
   end
 
 end

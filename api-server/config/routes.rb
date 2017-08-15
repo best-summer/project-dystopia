@@ -1,32 +1,23 @@
 Rails.application.routes.draw do
+  get 'results/show'
+
+  get 'results/update'
+
   resources :items
-  # get 'items/index' to
-  #
-  # get 'items/show'
-  #
-  # get 'items/create'
-  #
-  # get 'items/update'
-  #
-  # get 'items/destroy'
-
-
-
   resources :users
   post '/signup', to: 'users#create'
-  patch '/status', to: 'users#update_show'
+  patch '/status', to: 'users#update'
   delete '/logout',  to: 'sessions#destroy'
-  patch '/signup', to: 'users#update'
-  get '/users/:name/status',  to: 'users#show'
-  patch '/users/:name/status',  to: 'users#update_show'
-  get '/users/:name/items',  to: 'items#show'
-  post '/users/:name/items',  to: 'items#create'
+  post '/gacha',  to: 'items#gacha'
+  get '/debug', to: 'users#debug'
 
-  get 'users/index'
-  # post 'users/create'
-  # get 'users/show'
-  # patch 'users/update'
-  # delete 'users/destroy'
 
+  get '/users/:device_id/status',  to: 'users#show'
+  patch '/users/:device_id/status',  to: 'users#update'
+  get '/users/:device_id/items',  to: 'items#show'
+  post '/users/:device_id/items',  to: 'items#create'
+  patch '/users/:device_id/items',  to: 'items#update'
+  get '/users/:device_id/results',  to: 'results#show'
+  patch '/users/:device_id/results',  to: 'results#update'
 
 end
