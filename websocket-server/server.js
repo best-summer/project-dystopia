@@ -1,4 +1,4 @@
-// WebSocket-Server v0.1.1
+// WebSocket-Server v0.1.2
 const fs = require("fs");
 var http = require("http");
 const request = require("request");
@@ -27,8 +27,6 @@ io = io.listen(http);
 
 io.sockets.on("connection", function (socket) {
 
-    // props = JSON.parse(props);
-
   var types = {
     start_match: start_match,
     cancel_match: cancel_match,
@@ -39,8 +37,7 @@ io.sockets.on("connection", function (socket) {
   };
 
   socket.on('message', function(props) {
-
-    // Check whether props.type is correct type.
+    props = JSON.parse(props);
     var typeNames = Object.keys(types);
     if (!typeNames.includes(props.type)) {
       io.to(socket.id).emit(`message`, {
@@ -54,6 +51,7 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on('disconnect', function(props) {
+    props = JSON.parse(props);
     const player = players.getBySocketId(socket.id);
     if (player) {
       players.remove(player.device_id);
