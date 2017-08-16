@@ -27,7 +27,7 @@ io = io.listen(http);
 
 io.sockets.on("connection", function (socket) {
 
-    // props = JSON.parse(props);
+    props = JSON.parse(props);
 
   var types = {
     start_match: start_match,
