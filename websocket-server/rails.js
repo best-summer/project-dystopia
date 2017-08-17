@@ -1,7 +1,7 @@
 var request = require("request");
 var Users = require("./users");
 var Items = require('./items');
-var END_POINT = `https://best-summer-api.herokuapp.com/`;
+const params = require('./params');
 
 module.exports = class Rails {
   constructor() {
@@ -11,7 +11,7 @@ module.exports = class Rails {
   static signup(props) {
     return new Promise((resolve) => {
       var options = {
-        url: END_POINT + `signup`,
+        url: params.rails_endpoint + `signup`,
         headers: { "Content-type": "application/json" },
         json: {
           name: props.user_name,
