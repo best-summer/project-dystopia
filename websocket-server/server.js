@@ -20,7 +20,7 @@ http = http.createServer(function (req, res) {
   res.writeHead(200, { "Content-Type": "text/html" });
   var output = fs.readFileSync("./index.html", "utf-8");
   res.end(output);
-}).listen(3000);
+}).listen(2525);
 
 io = io.listen(http);
 
@@ -37,7 +37,8 @@ io.sockets.on("connection", function (socket) {
   };
 
   socket.on('message', function(props) {
-    props = JSON.parse(props);
+    //props = JSON.parse(props);
+    console.log(props);
     var typeNames = Object.keys(types);
     if (!typeNames.includes(props.type)) {
       io.to(socket.id).emit(`message`, {
@@ -51,7 +52,7 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on('disconnect', function(props) {
-    props = JSON.parse(props);
+    //props = JSON.parse(props);
     const player = players.getBySocketId(socket.id);
     if (player) {
       players.remove(player.device_id);

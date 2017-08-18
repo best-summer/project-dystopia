@@ -1,5 +1,5 @@
 var request = require("request");
-var END_POINT = `https://best-summer-api.herokuapp.com/`
+const params = require('./params');
 
 module.exports = class Results {
   constructor(device_id, login_key) {
@@ -10,7 +10,7 @@ module.exports = class Results {
   async get() {
     return new Promise((resolve) => {
       var options = {
-        url: END_POINT +
+        url: params.rails_endpoint +
         `users/` + this.device_id +
         `/results?login_key=` + this.login_key,
       };
@@ -24,7 +24,7 @@ module.exports = class Results {
   async set(new_props) {
     return new Promise((resolve) => {
       var options = {
-        url: END_POINT + `users/` + this.device_id + `/results`,
+        url: params.rails_endpoint + `users/` + this.device_id + `/results`,
         json: {
           score: new_props.score,
           vs: new_props.vs,
