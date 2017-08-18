@@ -38,7 +38,7 @@ io.sockets.on("connection", function (socket) {
   };
 
   socket.on('message', function(props) {
-    props = JSON.parse(props);
+    // props = JSON.parse(props);
     var typeNames = Object.keys(types);
     if (!typeNames.includes(props.type)) {
       io.to(socket.id).emit(`message`, {
@@ -52,7 +52,7 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on('disconnect', function(props) {
-    props = JSON.parse(props);
+    // props = JSON.parse(props);
     const player = players.getBySocketId(socket.id);
     if (player) {
       players.remove(player.device_id);
@@ -199,14 +199,14 @@ var game_start = async function(socket, props) {
   }
   if (player.status == 'standby' && rival.status == 'standby') {
     player.status = 'playing';
-    riva.status = 'playing';
+    rival.status = 'playing';
     emit(player.socket_id, {
       type: `game_start`,
-      room_id: room_id,
+      room_id: player.room_id,
     });
     emit(rival.socket_id, {
       type: `game_start`,
-      room_id: room_id,
+      room_id: rival.room_id,
     });
   }
 }
