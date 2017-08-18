@@ -1,4 +1,4 @@
-// WebSocket-Server v0.2.0
+// WebSocket-Server v0.2.1
 const fs = require("fs");
 var http = require("http");
 const request = require("request");
