@@ -206,14 +206,14 @@ var game_start = async function(socket, props) {
       room_id: player.room_id,
       device_id: player.device_id,
       position: { x: 100.477272, y: 135.595291 },
-      angle: { r: 0.9969423 }
+      angle: { r: 0.9929423 }
     });
     emit(rival.socket_id, {
       type: `game_start`,
       room_id: rival.room_id,
       device_id: rival.device_id,
-      position: { x: 105.087883, y: 123.747246 },
-      angle: { r: -0.15460664 }
+      position: { x: 108.775345, y: 133.51329 },
+      angle: { r: -0.5719705 }
     });
   }
 }

@@ -1,5 +1,14 @@
 # Created by https://www.gitignore.io/api/node,ruby,macos,rails,unity
+<<<<<<< Updated upstream
 api-server/vendor/bundle
+=======
+<<<<<<< HEAD
+api-server/.bundle
+api-server/vendor/bundle
+=======
+
+>>>>>>> parent of 052d086... Merge remote-tracking branch 'origin/master'
+>>>>>>> Stashed changes
 ### macOS ###
 *.DS_Store
 .AppleDouble
