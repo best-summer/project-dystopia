@@ -1,4 +1,4 @@
-// WebSocket-Server v0.1.2
+// WebSocket-Server v0.2.1
 const fs = require("fs");
 var http = require("http");
 const request = require("request");
@@ -30,6 +30,7 @@ io.sockets.on("connection", function (socket) {
   var types = {
     start_match: start_match,
     cancel_match: cancel_match,
+    game_start: game_start,
     game_finish: game_finish,
     splash_water: splash_water,
     hit_water: hit_water,
@@ -174,11 +175,41 @@ var complete_match = function(room_id) {
       room_id: room_id,
       enemy: rival
     });
+  });
+}
+
+var game_start = async function(socket, props) {
+  const player = players.get(props.device_id);
+  if (player == null || player.finished) {
+    emit(socket.id, {
+      type: `game_finish`,
+      status: `ng`,
+      message: `You are not logged in.`
+    });
+    return;
+  }
+  player.status = 'standby';
+  const rival = players.rivalOf(player.device_id);
+  if (rival == null) {
+    emit(socket.id, {
+      type: `splash_water`,
+      status: `ng`,
+      message: `rival is not logged in.`
+    });
+    return;
+  }
+  if (player.status == 'standby' && rival.status == 'standby') {
+    player.status = 'playing';
+    rival.status = 'playing';
     emit(player.socket_id, {
       type: `game_start`,
-      room_id: room_id,
+      room_id: player.room_id,
     });
-  });
+    emit(rival.socket_id, {
+      type: `game_start`,
+      room_id: rival.room_id,
+    });
+  }
 }
 
 var game_finish = async function(socket, props) {
