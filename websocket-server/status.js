@@ -1,5 +1,5 @@
 var request = require("request");
-var END_POINT = `https://best-summer-api.herokuapp.com/`
+const params = require('./params');
 
 module.exports = class Status {
   constructor(device_id, login_key) {
@@ -10,7 +10,7 @@ module.exports = class Status {
   async get() {
     return new Promise((resolve) => {
       var options = {
-        url: END_POINT +
+        url: params.rails_endpoint +
         `users/` + this.device_id +
         `/status?login_key=` + this.login_key,
       };

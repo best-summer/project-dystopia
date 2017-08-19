@@ -6,9 +6,9 @@ class User < ApplicationRecord
 
   # ログインキーを生成する
   def create_login_key
-    # write_attribute(:login_key, SecureRandom.base64(8))
+    write_attribute(:login_key, SecureRandom.base64(8))
     # デバッグ用に同じ値を利用する
-    write_attribute(:login_key, "LOGINKEY")
+    # write_attribute(:login_key, "LOGINKEY")
   end
 
   # デバイスIDとログインキーの一致を確認する

@@ -2,7 +2,7 @@ var request = require("request");
 var Status = require('./status');
 var Items = require('./items');
 var Results = require('./results');
-var END_POINT = `https://best-summer-api.herokuapp.com/`
+const params = require('./params');
 
 module.exports = class Users {
   constructor(device_id, login_key) {
@@ -15,7 +15,7 @@ module.exports = class Users {
 
   list() {
     return new Promise((resolve) => {
-      var options = { url: END_POINT + `debug` };
+      var options = { url: params.rails_endpoint + `debug` };
       request.get(options, function (error, response, body) {
         resolve(body);
         // callback(body);
