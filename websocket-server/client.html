@@ -13,6 +13,7 @@
   <button onclick="ShinodaHajime();" id="join">ShinodaHajime</button>
   <button onclick="start_match();" id="join">start_match</button>
   <button onclick="cancel_match();" id="join">cancel_match</button>
+  <button onclick="game_start();" id="join">game_start</button>
   <!-- <button onclick="complete_match();" id="join">complete_match</button> -->
   <!-- <button onclick="game_start();" id="join">game_start</button> -->
   <!-- <button onclick="game_finish();" id="join">game_finish</button> -->
@@ -68,6 +69,13 @@
     function cancel_match() {
       socketio.emit('message', {
         type: `cancel_match`,
+        device_id: deviceId
+      });
+    }
+
+    function game_start() {
+      socketio.emit('message', {
+        type: `game_start`,
         device_id: deviceId
       });
     }
